@@ -125,17 +125,28 @@
 \hypertarget{ux306fux3058ux3081ux306b}{%
 \chapter{はじめに}\label{ux306fux3058ux3081ux306b}}
 
+\hypertarget{ux3053ux306eux672cux3067ux3084ux308bux3053ux3068}{%
+\section{この本でやること}\label{ux3053ux306eux672cux3067ux3084ux308bux3053ux3068}}
+
 \href{https://gihyo.jp/book/2020/978-4-297-11517-3}{Pythonによる医療データ分析入門―pandas＋擬似レセプト編}をRでやってみる、という内容です。
 
 ソースコードは\href{https://github.com/gghatano/python_synthetic_medical_data}{GitHub}にも置いていきます。
 
+\hypertarget{ux6ce8ux610fux70b9}{%
+\section{注意点}\label{ux6ce8ux610fux70b9}}
+
+Rでやるので、参考文献と比べて実装方針が異なるところはあると思います。
+
+\hypertarget{chapterux540dux3092ux5f8cux3067ux8003ux3048ux308b}{%
+\chapter{chapter名を後で考える}\label{chapterux540dux3092ux5f8cux3067ux8003ux3048ux308b}}
+
 \hypertarget{ux524dux6e96ux50991-1}{%
-\chapter{前準備(1-1)}\label{ux524dux6e96ux50991-1}}
+\section{前準備(1-1)}\label{ux524dux6e96ux50991-1}}
 
 1-1では、その下準備のために、出生と死亡のデータを作成する。
 
 \hypertarget{ux51faux751fux7387ux30c7ux30fcux30bfux306eux53d6ux5f97}{%
-\section{出生率データの取得}\label{ux51faux751fux7387ux30c7ux30fcux30bfux306eux53d6ux5f97}}
+\subsection{出生率データの取得}\label{ux51faux751fux7387ux30c7ux30fcux30bfux306eux53d6ux5f97}}
 
 \href{http://www.ipss.go.jp/}{IPSS}が公開している、年次出生数のデータを利用する。
 
@@ -270,7 +281,7 @@
 これを利用して、出生のシミュレーションができる。
 
 \hypertarget{ux6b7bux4ea1ux30c7ux30fcux30bfux306eux53d6ux5f97ux3068ux6574ux5f62}{%
-\section{死亡データの取得と整形}\label{ux6b7bux4ea1ux30c7ux30fcux30bfux306eux53d6ux5f97ux3068ux6574ux5f62}}
+\subsection{死亡データの取得と整形}\label{ux6b7bux4ea1ux30c7ux30fcux30bfux306eux53d6ux5f97ux3068ux6574ux5f62}}
 
 次は、死亡率を算出して、死亡のシミュレーションを行う。
 
@@ -442,7 +453,7 @@ AnbとAlbについては、あとで追記する。Anbなので、Albに直す�
 おわり
 
 \hypertarget{ux3053ux3053ux307eux3067ux3084ux3063ux305fux3053ux3068}{%
-\section{ここまでやったこと}\label{ux3053ux3053ux307eux3067ux3084ux3063ux305fux3053ux3068}}
+\subsection{ここまでやったこと}\label{ux3053ux3053ux307eux3067ux3084ux3063ux305fux3053ux3068}}
 
 \begin{itemize}
 \tightlist
@@ -455,19 +466,25 @@ AnbとAlbについては、あとで追記する。Anbなので、Albに直す�
 \end{itemize}
 
 \hypertarget{ux3064ux304eux306bux3084ux308bux3053ux3068}{%
-\section{つぎにやること}\label{ux3064ux304eux306bux3084ux308bux3053ux3068}}
+\subsection{つぎにやること}\label{ux3064ux304eux306bux3084ux308bux3053ux3068}}
 
 擬似レセプトデータを作るために\ldots{}
 - 出生のシミュレーション
 - 死亡のシミュレーシ
 
 \hypertarget{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3-1-2}{%
-\chapter{出生・死亡のシミュレーション (1-2)}\label{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3-1-2}}
+\section{出生・死亡のシミュレーション (1-2)}\label{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3-1-2}}
 
 出生と死亡をシミュレーションして、擬似健康保険組合データを作成する。
 
 \hypertarget{ux51faux751fux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}{%
-\section{出生のシミュレーション}\label{ux51faux751fux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}}
+\subsection{出生のシミュレーション}\label{ux51faux751fux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}}
+
+\hypertarget{ux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}{%
+\subsection{死亡のシミュレーション}\label{ux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}}
+
+\hypertarget{ux307eux3068ux3081}{%
+\subsection{まとめ}\label{ux307eux3068ux3081}}
 
   \bibliography{book.bib}
 
