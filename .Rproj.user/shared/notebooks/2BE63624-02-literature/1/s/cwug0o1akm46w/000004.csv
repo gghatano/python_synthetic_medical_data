@@ -1,4 +1,0 @@
-"0",""
-"0","dat %>% "
-"0","        select(-Total) %>% "
-"0","        write.csv(""./data/ipss_birth.csv"", row.names=FALSE, quote = FALSE)"

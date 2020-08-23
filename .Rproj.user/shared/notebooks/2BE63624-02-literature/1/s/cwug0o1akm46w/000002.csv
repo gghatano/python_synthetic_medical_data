@@ -1,7 +1,0 @@
-"0","dat %<>%"
-"0","        arrange(Sex, Year)"
-"0","dat %<>%"
-"0","        mutate(ratio = Life / sum(Life)) %>%"
-"0","        mutate(cum_sum = cumsum(ratio))"
-"0",""
-"0","dat %>% head"
