@@ -1,0 +1,7 @@
+"0","dat %>% "
+"0","        pivot_longer(cols=c(""F"",""M""), names_to = ""Sex"", values_to = ""Mortarity"") %>% "
+"0","        ggplot(aes(x = Alb, y = Mortarity, group = Sex, color = Sex)) + "
+"0","        geom_line() + "
+"0","        geom_hline(yintercept = 1.0, linetype = ""dashed"") + "
+"0","        annotate(""text"", x = 10, y = 1.05, label = 'Mortarity: 1.0') + "
+"0","        ggtitle(""Mortarity"")"

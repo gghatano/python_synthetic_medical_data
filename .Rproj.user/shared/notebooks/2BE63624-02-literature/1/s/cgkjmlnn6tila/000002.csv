@@ -1,0 +1,5 @@
+"0","library(readr)"
+"0","library(dplyr)"
+"0","url = 'http://www.ipss.go.jp/p-toukei/JMD/00/STATS/Births.txt'"
+"0","dat = read.table(url, skip=2, header = TRUE)"
+"0","dat %>% head"

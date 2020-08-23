@@ -1,0 +1,4 @@
+"0","dat %<>% "
+"0","        filter(Year == 2016) %>% "
+"0","        select(-Year) %>% "
+"0","        select(-Total)"

@@ -1,0 +1,6 @@
+"0","library(tidyr)"
+"0","library(magrittr)"
+"0","dat %>%  "
+"0","        pivot_longer(cols = c(""Male"", ""Female""), names_to = ""Sex"", values_to = ""Life"") %>% "
+"0","        mutate(Sex = if_else(Sex == ""Female"", ""F"", ""M"")) -> dat"
+"0","dat"
