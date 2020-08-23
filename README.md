@@ -1,1 +1,6 @@
-This is a minimal example of a book based on R Markdown and **bookdown** (https://github.com/rstudio/bookdown). Please see the page "Get Started" at https://bookdown.org/home/about/ for how to compile this example.
+## Python医療データ分析入門をRでやる
+
+
+gitbookで作っていきます。
+ 
+https://gghatano.github.io/python_synthetic_medical_data/
