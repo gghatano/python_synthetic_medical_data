@@ -113,7 +113,7 @@
 
 \title{Python医療データ分析本をRでやる}
 \author{gg\_hatano}
-\date{2020-08-23}
+\date{2020-08-24}
 
 \begin{document}
 \maketitle
@@ -137,13 +137,15 @@
 
 Rでやるので、参考文献と比べて実装方針が異なるところはあると思います。
 
-\hypertarget{chapterux540dux3092ux5f8cux3067ux8003ux3048ux308b}{%
-\chapter{chapter名を後で考える}\label{chapterux540dux3092ux5f8cux3067ux8003ux3048ux308b}}
+\hypertarget{ux6b7bux4ea1ux7387ux306eux63a8ux5b9a}{%
+\chapter{死亡率の推定}\label{ux6b7bux4ea1ux7387ux306eux63a8ux5b9a}}
 
-\hypertarget{ux524dux6e96ux50991-1}{%
-\section{前準備(1-1)}\label{ux524dux6e96ux50991-1}}
+1章です。
 
-1-1では、その下準備のために、出生と死亡のデータを作成する。
+\hypertarget{ux65e5ux672cux7248ux6b7bux4ea1ux30c7ux30fcux30bfux30d9ux30fcux30b9ux306eux5229ux7528}{%
+\section{「日本版死亡データベース」の利用}\label{ux65e5ux672cux7248ux6b7bux4ea1ux30c7ux30fcux30bfux30d9ux30fcux30b9ux306eux5229ux7528}}
+
+健保組合データを擬似生成するために、出生・志望の公的統計を利用して、乱数でシミュレーションする。
 
 \hypertarget{ux51faux751fux7387ux30c7ux30fcux30bfux306eux53d6ux5f97}{%
 \subsection{出生率データの取得}\label{ux51faux751fux7387ux30c7ux30fcux30bfux306eux53d6ux5f97}}
@@ -472,8 +474,8 @@ AnbとAlbについては、あとで追記する。Anbなので、Albに直す�
 - 出生のシミュレーション
 - 死亡のシミュレーシ
 
-\hypertarget{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3-1-2}{%
-\section{出生・死亡のシミュレーション (1-2)}\label{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3-1-2}}
+\hypertarget{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}{%
+\section{出生・死亡のシミュレーション}\label{ux51faux751fux6b7bux4ea1ux306eux30b7ux30dfux30e5ux30ecux30fcux30b7ux30e7ux30f3}}
 
 出生と死亡をシミュレーションして、擬似健康保険組合データを作成する。
 

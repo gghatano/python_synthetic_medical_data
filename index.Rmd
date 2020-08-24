@@ -10,7 +10,7 @@ link-citations: yes
 description: "Python医療データ分析本をRでやってbookdownで公開します"
 output:
   bookdown::gitbook:
-    split_by: chapter
+    split_by: rmd
 ---
 
 
