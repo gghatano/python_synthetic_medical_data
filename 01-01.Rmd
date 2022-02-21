@@ -78,7 +78,6 @@ dat %>%
 
 次は、死亡率を算出して、死亡のシミュレーションを行う。
 
-
 ```{r}
 url_death_rate = "http://www.ipss.go.jp/p-toukei/JMD/00/STATS/Mx_1x1.txt"
 dat = read.table(url_death_rate, skip=2, header = TRUE)
@@ -152,7 +151,7 @@ dat %>%
 
 年次死亡率を$y$、月次死亡率を$x$とすると、
 
-$y = 1 - (1-x)^{12}$なので、$x = 1 - (1-y)^{0.08...}$になる。
+$y = 1 - (1-x)^{12}$なので、$x$について解くと、$x = 1 - (1-y)^{0.08...}$になる。これにより、月次死亡率が得られる。
 
 ```{r}
 dat %<>%
@@ -163,7 +162,10 @@ dat %<>%
         mutate(M = 1 - (1-M)**(1/12)) 
 
 dat %>% write.csv("./data/ipss_mortality.csv", quote=F, row.names = F)
-dat %>% head
+dat %>% 
+        mutate(F = round(F, 7)) %>% 
+        mutate(M = round(M, 7)) %>% 
+        head
 
 ```
 
