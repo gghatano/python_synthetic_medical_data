@@ -228,16 +228,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-4"><a href="01-01.html#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">ratio =</span> Life <span class="sc">/</span> <span class="fu">sum</span>(Life)) <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="01-01.html#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">cum_sum =</span> <span class="fu">cumsum</span>(ratio))</span>
 <span id="cb5-6"><a href="01-01.html#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="01-01.html#cb5-7" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> head</span></code></pre></div>
-<pre><code>## # A tibble: 6 × 6
-##    Year   Total Sex      Life   ratio cum_sum
-##   &lt;int&gt;   &lt;int&gt; &lt;chr&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-## 1  1947 2678792 F     1301806 0.0118   0.0118
-## 2  1948 2681624 F     1303060 0.0119   0.0237
-## 3  1949 2696638 F     1316630 0.0120   0.0357
-## 4  1950 2337507 F     1134396 0.0103   0.0460
-## 5  1951 2137689 F     1043048 0.00949  0.0555
-## 6  1952 2005162 F      977101 0.00889  0.0644</code></pre>
+<span id="cb5-7"><a href="01-01.html#cb5-7" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">100</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 100 × 6
+##     Year   Total Sex      Life   ratio cum_sum
+##    &lt;int&gt;   &lt;int&gt; &lt;chr&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1  1947 2678792 F     1301806 0.0118   0.0118
+##  2  1948 2681624 F     1303060 0.0119   0.0237
+##  3  1949 2696638 F     1316630 0.0120   0.0357
+##  4  1950 2337507 F     1134396 0.0103   0.0460
+##  5  1951 2137689 F     1043048 0.00949  0.0555
+##  6  1952 2005162 F      977101 0.00889  0.0644
+##  7  1953 1868040 F      910516 0.00829  0.0727
+##  8  1954 1769580 F      858368 0.00781  0.0805
+##  9  1955 1730692 F      841022 0.00765  0.0882
+## 10  1956 1665278 F      809194 0.00736  0.0955
+## # … with 90 more rows</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="01-01.html#cb7-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">%&gt;%</span> </span>
 <span id="cb7-2"><a href="01-01.html#cb7-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="sc">-</span>Total) <span class="sc">%&gt;%</span> </span>
 <span id="cb7-3"><a href="01-01.html#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">write.csv</span>(<span class="st">&quot;./data/ipss_birth.csv&quot;</span>, <span class="at">row.names=</span><span class="cn">FALSE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
@@ -259,14 +264,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-3"><a href="01-01.html#cb12-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">row_num =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.)) <span class="sc">%&gt;%</span> </span>
 <span id="cb12-4"><a href="01-01.html#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
 <span id="cb12-5"><a href="01-01.html#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> row_num, <span class="at">y =</span> cum_sum), <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
-<span id="cb12-6"><a href="01-01.html#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;segment&quot;</span>,<span class="at">x=</span><span class="dv">1</span>,<span class="at">xend=</span><span class="dv">90</span>,<span class="at">y=</span><span class="fl">0.7</span>,<span class="at">yend=</span><span class="fl">0.7</span>,<span class="at">colour=</span><span class="st">&quot;blue&quot;</span>,</span>
+<span id="cb12-6"><a href="01-01.html#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;segment&quot;</span>,<span class="at">x=</span><span class="dv">1</span>,<span class="at">xend=</span><span class="dv">96</span>,<span class="at">y=</span><span class="fl">0.7</span>,<span class="at">yend=</span><span class="fl">0.7</span>,<span class="at">colour=</span><span class="st">&quot;blue&quot;</span>,</span>
 <span id="cb12-7"><a href="01-01.html#cb12-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">size=</span><span class="dv">1</span>, <span class="at">arrow=</span><span class="fu">arrow</span>()) <span class="sc">+</span> </span>
-<span id="cb12-8"><a href="01-01.html#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;segment&quot;</span>,<span class="at">x=</span><span class="dv">92</span>,<span class="at">xend=</span><span class="dv">92</span>,<span class="at">y=</span><span class="fl">0.65</span>,<span class="at">yend=</span><span class="fl">0.0</span>,<span class="at">colour=</span><span class="st">&quot;blue&quot;</span>,</span>
+<span id="cb12-8"><a href="01-01.html#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;segment&quot;</span>,<span class="at">x=</span><span class="dv">98</span>,<span class="at">xend=</span><span class="dv">98</span>,<span class="at">y=</span><span class="fl">0.7</span>,<span class="at">yend=</span><span class="fl">0.0</span>,<span class="at">colour=</span><span class="st">&quot;blue&quot;</span>,</span>
 <span id="cb12-9"><a href="01-01.html#cb12-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">size=</span><span class="dv">1</span>,<span class="at">arrow=</span><span class="fu">arrow</span>()) <span class="sc">+</span> </span>
 <span id="cb12-10"><a href="01-01.html#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">20</span>, <span class="at">y=</span><span class="fl">0.75</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Random Number 0.7&#39;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb12-11"><a href="01-01.html#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">120</span>, <span class="at">y=</span><span class="fl">0.2</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Rownum: 95 -&gt; 1969-Female&#39;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="01-01.html#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">125</span>, <span class="at">y=</span><span class="fl">0.2</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Rownum: 98 -&gt; 1971-Male&#39;&quot;</span>) <span class="sc">+</span></span>
 <span id="cb12-12"><a href="01-01.html#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">&quot;Cumulative ratio of Population Birth&quot;</span>)</span></code></pre></div>
-<p><img src="python-medical-data_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p><img src="python-medical-data_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>これを利用して、出生のシミュレーションができる。</p>
 </div>
 <div id="死亡データの取得と整形" class="section level3" number="2.1.2">
@@ -355,7 +360,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb22-6"><a href="01-01.html#cb22-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="fl">1.05</span>, <span class="at">label =</span> <span class="st">&#39;Mortarity: 1.0&#39;</span>) <span class="sc">+</span> </span>
 <span id="cb22-7"><a href="01-01.html#cb22-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">&quot;Mortarity&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 2 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="python-medical-data_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="python-medical-data_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>高齢部分が不自然だが、そういうものらしい。100才以上は使わない、として切り捨てる。</p>
 <p>また、年次死亡率を月次死亡率に変換する。</p>
 <p>年次死亡率を<span class="math inline">\(y\)</span>、月次死亡率を<span class="math inline">\(x\)</span>とすると、</p>
