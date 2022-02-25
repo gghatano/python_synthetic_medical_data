@@ -117,7 +117,7 @@ df_exposure = df_exposure %>%
   mutate(family = if_else(value < family_ratio, 2, 1 )) %>% ## 1なら本人
   select(-value, -value1, -value2, -start_t, -end_t) %>% 
   mutate(iid = 1:nrow(.)) %>% 
-  mutate(iid = paste("i", sprintf("%06d", iid, sep = "")))
+  mutate(iid = paste("i", sprintf("%06d", iid), sep = ""))
 
 ## 整形
 df_exposure = 
@@ -190,4 +190,82 @@ df_birth_compare_long %>%
 
 ### 死亡のシミュレーション
 
+次に、死亡をシミュレーションします。月次死亡率を取得します。
+
+```{r}
+df_mortality = read_csv("data/ipss_mortality.csv")
+df_mortality %<>% 
+  gather(sex, mortality, -Alb) %>% 
+  mutate(key = paste(Alb, sex, sep = "_"))
+df_mortality %>% head
+```
+
+年齢ごとに、一定確率で死亡するので、これをシミュレーションします。
+
+```{r}
+## 観察期間全体の期間を作成する
+date_vec = seq(as.Date("2010/01/01"), as.Date("2019/12/01"), by = "month")
+df_month = data.frame(date = date_vec)
+df_month %>% head
+```
+
+誕生日から年齢が計算できるので、各月で当該年齢の死亡率が得られて、乱数で死亡判定ができる。
+
+```{r}
+## 月次死亡確率を付与しておく
+df_exposure_mortality = 
+  df_exposure %>% 
+  merge(df_month, all = True) %>% 
+  mutate(birth_tmp = paste(birth_ym, "/01", sep = "")) %>% 
+  mutate(age = (as.Date(date) - as.Date(birth_tmp)) / 365) %>% 
+  mutate(age = as.integer(age)) %>% 
+  mutate(key = paste(age, Sex, sep = "_")) %>% 
+  merge(df_mortality, by = "key") %>% 
+  select(-key, -Alb, -birth_tmp, -Sex)
+
+## 乱数で、死亡判定をする
+df_death_date =
+  df_exposure_mortality %>% 
+  mutate(value = runif(nrow(.))) %>% 
+  mutate(value = value) %>% 
+  mutate(death_flg = value < mortality) %>%  ## 乱数で死亡判定する
+  arrange(iid, date) %>% ## 最初に死亡した時を調べるために、idごとに処理する
+  group_by(iid) %>% 
+  mutate(val = cumsum(death_flg)) %>% ## 最初に0->1になるところで死亡している
+  mutate(val = cumsum(val)) %>%       ## 2回cumsumを取れば、↑は==1のところになる
+  filter(val == 1) %>% 
+  select(iid, death_date = date)
+
+## 観察期間との整合性をとる。
+## 死亡していたら、観察期間は死亡日よりも前
+## 観察期間より前に死亡していたら、無視する (それより前に死亡している可能性もありそうだが...)
+df_exposure_death = 
+  df_exposure %>% 
+  left_join(df_death_date, by = "iid") %>% 
+  mutate(start_obs_ym = paste(start_obs_ym, "/01", sep = "")) %>% 
+  mutate(end_obs_ym = paste(end_obs_ym, "/01", sep = "")) %>% 
+  mutate(birth_ym = paste(birth_ym, "/01", sep = "")) %>% 
+  mutate(start_obs_ym = as.Date(start_obs_ym)) %>% 
+  mutate(end_obs_ym = as.Date(end_obs_ym)) %>% 
+  mutate(birth_ym = as.Date(birth_ym)) %>% 
+  mutate(tmp = if_else(is.na(death_date), as.Date("2199/12/31"), death_date)) %>% 
+  mutate(end_obs_ym  = if_else(end_obs_ym > tmp, death_date - 30, end_obs_ym)) %>% 
+  mutate(start_obs_ym  = if_else(start_obs_ym < birth_ym, birth_ym, start_obs_ym)) %>% 
+  filter(start_obs_ym < tmp) %>% 
+  select(-tmp)
+  
+## 保存しておく
+df_exposure_death %>% write.csv("./data/pseudo_medical_record.csv", quote = FALSE, row.names = FALSE)
+## 内容確認
+df_exposure_death %>% head
+
+```
+
+それっぽいものはできました...が、
+- 観測期間後に死亡した人の扱い
+- 観測期間前に死亡した人の扱い
+について、調べておきます。
+
 ### まとめ
+
+公的統計のデータを用いて、出生、志望のシミュレーションをして、擬似データを生成しました。

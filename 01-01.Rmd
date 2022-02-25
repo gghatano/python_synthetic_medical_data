@@ -2,9 +2,11 @@
 
 1章です。
 
-## 「日本版死亡データベース」の利用
+## 日本版死亡データベースの取得・集計
 
-健保組合データを擬似生成するために、出生・志望の公的統計を利用して、乱数でシミュレーションする。
+健保組合データを擬似生成するために、出生・志望の公的統計を利用する。
+
+乱数でシミュレーションするために必要な情報を集計して求める。
 
 ### 出生率データの取得
 
@@ -19,14 +21,14 @@ dat %>% head
 ```
 ある年に、FemaleとMaleが何人生まれたかのデータになっている。
 
-性別列を作って縦に持っておく。
+乱数を利用して、誕生年と性別をサンプリングしたい。性別列を作って縦に持っておく。
 
 ```{r, message=FALSE}
 library(tidyr)
 library(magrittr)
 dat %>%  
-        pivot_longer(cols = c("Male", "Female"), names_to = "Sex", values_to = "Life") %>% 
-        mutate(Sex = if_else(Sex == "Female", "F", "M")) -> dat
+  pivot_longer(cols = c("Male", "Female"), names_to = "Sex", values_to = "Life") %>% 
+  mutate(Sex = if_else(Sex == "Female", "F", "M")) -> dat
 dat
 ```
 
@@ -34,16 +36,19 @@ dat
 
 ```{r}
 dat %<>%
-        arrange(Sex, Year)
+  arrange(Sex, Year)
 dat %<>%
-        mutate(ratio = Life / sum(Life)) %>%
-        mutate(cum_sum = cumsum(ratio))
+  mutate(ratio = Life / sum(Life)) %>%
+  mutate(cum_sum = cumsum(ratio))
 
-dat %>% head(100)
 
 dat %>% 
-        select(-Total) %>% 
-        write.csv("./data/ipss_birth.csv", row.names=FALSE, quote = FALSE)
+  select(-Total) %>% 
+  write.csv("./data/ipss_birth.csv", row.names=FALSE, quote = FALSE)
+## 内容確認
+dat %>% 
+  select(-Total) %>% 
+  head(100)
 ```
 
 
@@ -57,17 +62,17 @@ library(ggplot2)
 dat = read_csv("./data/ipss_birth.csv")
 
 dat %>% 
-        mutate(x_axis = paste(Year, Sex, sep="")) %>% 
-        mutate(row_num = 1:nrow(.)) %>% 
-        ggplot() + 
-        geom_line(aes(x = row_num, y = cum_sum), stat = "identity") +
-        annotate("segment",x=1,xend=96,y=0.7,yend=0.7,colour="blue",
-             size=1, arrow=arrow()) + 
-        annotate("segment",x=98,xend=98,y=0.7,yend=0.0,colour="blue",
-                    size=1,arrow=arrow()) + 
-        annotate("text", x=20, y=0.75, parse=TRUE, label="'Random Number 0.7'") +
-        annotate("text", x=125, y=0.2, parse=TRUE, label="'Rownum: 98 -> 1971-Male'") +
-        ggtitle("Cumulative ratio of Population Birth")
+  mutate(x_axis = paste(Year, Sex, sep="")) %>% 
+  mutate(row_num = 1:nrow(.)) %>% 
+  ggplot() + 
+  geom_line(aes(x = row_num, y = cum_sum), stat = "identity") +
+  annotate("segment",x=1,xend=96,y=0.7,yend=0.7,colour="blue",
+    size=1, arrow=arrow()) + 
+  annotate("segment",x=98,xend=98,y=0.7,yend=0.0,colour="blue",
+     size=1,arrow=arrow()) + 
+  annotate("text", x=20, y=0.75, parse=TRUE, label="'Random Number 0.7'") +
+  annotate("text", x=125, y=0.2, parse=TRUE, label="'Rownum: 98 -> 1971-Male'") +
+  ggtitle("Cumulative ratio of Population Birth")
 
 ```
 
@@ -91,9 +96,9 @@ dat %>% str
 
 ```{r}
 dat %<>% 
-        filter(Year == 2016) %>% 
-        select(-Year) %>% 
-        select(-Total)
+  filter(Year == 2016) %>% 
+  select(-Year) %>% 
+  select(-Total)
 ```
 
 Ageがcharになっているので、確認する。
@@ -105,12 +110,12 @@ dat$Age %>% table
 
 ```{r}
 dat %<>%
-        mutate(Age = if_else(Age == "110+", "111", Age)) %>% 
-        mutate(Age = as.integer(Age)) 
+  mutate(Age = if_else(Age == "110+", "111", Age)) %>% 
+  mutate(Age = as.integer(Age)) 
 
 dat %<>%
-        mutate(Anb = Age) %>% 
-        select(-Age)
+  mutate(Anb = Age) %>% 
+  select(-Age)
 
 dat %>% head
 ```
@@ -121,14 +126,14 @@ $x$才のAnb死亡率$q_x$とすると、Alb死亡率は、$\frac{q_x+q_{x+1}}{2
 
 ```{r}
 dat %<>%
-        mutate(Female = as.numeric(Female)) %>%
-        mutate(Male = as.numeric(Male)) %>% 
-        mutate(lead_Female = lead(Female)) %>% 
-        mutate(lead_Male = lead(Male)) %>% 
-        mutate(F = (Female + lead_Female)/2) %>% 
-        mutate(M = (Male + lead_Male)/2) %>% 
-        mutate(Alb = Anb) %>% 
-        select(Alb,F,M)
+  mutate(Female = as.numeric(Female)) %>%
+  mutate(Male = as.numeric(Male)) %>% 
+  mutate(lead_Female = lead(Female)) %>% 
+  mutate(lead_Male = lead(Male)) %>% 
+  mutate(F = (Female + lead_Female)/2) %>% 
+  mutate(M = (Male + lead_Male)/2) %>% 
+  mutate(Alb = Anb) %>% 
+  select(Alb,F,M)
 
 dat %>% head
 ```
@@ -137,12 +142,12 @@ dat %>% head
 横軸が年齢、縦軸が1年以内に死亡する確率。
 ```{r}
 dat %>% 
-        pivot_longer(cols=c("F","M"), names_to = "Sex", values_to = "Mortarity") %>% 
-        ggplot(aes(x = Alb, y = Mortarity, group = Sex, color = Sex)) + 
-        geom_line() + 
-        geom_hline(yintercept = 1.0, linetype = "dashed") + 
-        annotate("text", x = 10, y = 1.05, label = 'Mortarity: 1.0') + 
-        ggtitle("Mortarity")
+  pivot_longer(cols=c("F","M"), names_to = "Sex", values_to = "Mortarity") %>% 
+  ggplot(aes(x = Alb, y = Mortarity, group = Sex, color = Sex)) + 
+  geom_line() + 
+  geom_hline(yintercept = 1.0, linetype = "dashed") + 
+  annotate("text", x = 10, y = 1.05, label = 'Mortarity: 1.0') + 
+  ggtitle("Mortarity")
 ```
 
 高齢部分が不自然だが、そういうものらしい。100才以上は使わない、として切り捨てる。
@@ -155,17 +160,17 @@ $y = 1 - (1-x)^{12}$なので、$x$について解くと、$x = 1 - (1-y)^{0.08.
 
 ```{r}
 dat %<>%
-        filter(Alb < 100)
+  filter(Alb < 100)
 
 dat %<>% 
-        mutate(F = 1 - (1-F)**(1/12)) %>% 
-        mutate(M = 1 - (1-M)**(1/12)) 
+  mutate(F = 1 - (1-F)**(1/12)) %>% 
+  mutate(M = 1 - (1-M)**(1/12)) 
 
 dat %>% write.csv("./data/ipss_mortality.csv", quote=F, row.names = F)
 dat %>% 
-        mutate(F = round(F, 7)) %>% 
-        mutate(M = round(M, 7)) %>% 
-        head
+  mutate(F = round(F, 7)) %>% 
+  mutate(M = round(M, 7)) %>% 
+  head
 
 ```
 
