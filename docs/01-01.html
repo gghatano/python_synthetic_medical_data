@@ -24,7 +24,7 @@
 <meta name="author" content="gg_hatano" />
 
 
-<meta name="date" content="2022-02-21" />
+<meta name="date" content="2022-02-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -153,9 +153,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="01-02.html"><a href="01-02.html"><i class="fa fa-check"></i><b>2.2</b> 出生・死亡のシミュレーション</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="01-02.html"><a href="01-02.html#出生のシミュレーション"><i class="fa fa-check"></i><b>2.2.1</b> 出生のシミュレーション</a></li>
-<li class="chapter" data-level="2.2.2" data-path="01-02.html"><a href="01-02.html#死亡のシミュレーション"><i class="fa fa-check"></i><b>2.2.2</b> 死亡のシミュレーション</a></li>
-<li class="chapter" data-level="2.2.3" data-path="01-02.html"><a href="01-02.html#まとめ"><i class="fa fa-check"></i><b>2.2.3</b> まとめ</a></li>
+<li class="chapter" data-level="2.2.1" data-path="01-02.html"><a href="01-02.html#関数を定義する"><i class="fa fa-check"></i><b>2.2.1</b> 関数を定義する</a></li>
+<li class="chapter" data-level="2.2.2" data-path="01-02.html"><a href="01-02.html#出生のシミュレーション"><i class="fa fa-check"></i><b>2.2.2</b> 出生のシミュレーション</a></li>
+<li class="chapter" data-level="2.2.3" data-path="01-02.html"><a href="01-02.html#死亡のシミュレーション"><i class="fa fa-check"></i><b>2.2.3</b> 死亡のシミュレーション</a></li>
+<li class="chapter" data-level="2.2.4" data-path="01-02.html"><a href="01-02.html#まとめ"><i class="fa fa-check"></i><b>2.2.4</b> まとめ</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -271,7 +272,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-10"><a href="01-01.html#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">20</span>, <span class="at">y=</span><span class="fl">0.75</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Random Number 0.7&#39;&quot;</span>) <span class="sc">+</span></span>
 <span id="cb12-11"><a href="01-01.html#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">125</span>, <span class="at">y=</span><span class="fl">0.2</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Rownum: 98 -&gt; 1971-Male&#39;&quot;</span>) <span class="sc">+</span></span>
 <span id="cb12-12"><a href="01-01.html#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">&quot;Cumulative ratio of Population Birth&quot;</span>)</span></code></pre></div>
-<p><img src="python-medical-data_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="python-medical-data_files/figure-html/unnamed-chunk-365-1.png" width="672" /></p>
 <p>これを利用して、出生のシミュレーションができる。</p>
 </div>
 <div id="死亡データの取得と整形" class="section level3" number="2.1.2">
@@ -360,7 +361,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb22-6"><a href="01-01.html#cb22-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="fl">1.05</span>, <span class="at">label =</span> <span class="st">&#39;Mortarity: 1.0&#39;</span>) <span class="sc">+</span> </span>
 <span id="cb22-7"><a href="01-01.html#cb22-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="st">&quot;Mortarity&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 2 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="python-medical-data_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="python-medical-data_files/figure-html/unnamed-chunk-371-1.png" width="672" /></p>
 <p>高齢部分が不自然だが、そういうものらしい。100才以上は使わない、として切り捨てる。</p>
 <p>また、年次死亡率を月次死亡率に変換する。</p>
 <p>年次死亡率を<span class="math inline">\(y\)</span>、月次死亡率を<span class="math inline">\(x\)</span>とすると、</p>

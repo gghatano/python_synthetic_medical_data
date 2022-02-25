@@ -24,7 +24,7 @@
 <meta name="author" content="gg_hatano" />
 
 
-<meta name="date" content="2022-02-21" />
+<meta name="date" content="2022-02-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -153,9 +153,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="01-02.html"><a href="01-02.html"><i class="fa fa-check"></i><b>2.2</b> 出生・死亡のシミュレーション</a>
 <ul>
-<li class="chapter" data-level="2.2.1" data-path="01-02.html"><a href="01-02.html#出生のシミュレーション"><i class="fa fa-check"></i><b>2.2.1</b> 出生のシミュレーション</a></li>
-<li class="chapter" data-level="2.2.2" data-path="01-02.html"><a href="01-02.html#死亡のシミュレーション"><i class="fa fa-check"></i><b>2.2.2</b> 死亡のシミュレーション</a></li>
-<li class="chapter" data-level="2.2.3" data-path="01-02.html"><a href="01-02.html#まとめ"><i class="fa fa-check"></i><b>2.2.3</b> まとめ</a></li>
+<li class="chapter" data-level="2.2.1" data-path="01-02.html"><a href="01-02.html#関数を定義する"><i class="fa fa-check"></i><b>2.2.1</b> 関数を定義する</a></li>
+<li class="chapter" data-level="2.2.2" data-path="01-02.html"><a href="01-02.html#出生のシミュレーション"><i class="fa fa-check"></i><b>2.2.2</b> 出生のシミュレーション</a></li>
+<li class="chapter" data-level="2.2.3" data-path="01-02.html"><a href="01-02.html#死亡のシミュレーション"><i class="fa fa-check"></i><b>2.2.3</b> 死亡のシミュレーション</a></li>
+<li class="chapter" data-level="2.2.4" data-path="01-02.html"><a href="01-02.html#まとめ"><i class="fa fa-check"></i><b>2.2.4</b> まとめ</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -181,14 +182,212 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="出生死亡のシミュレーション" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> 出生・死亡のシミュレーション</h2>
 <p>出生と死亡をシミュレーションして、擬似健康保険組合データを作成する。</p>
-<div id="出生のシミュレーション" class="section level3" number="2.2.1">
-<h3><span class="header-section-number">2.2.1</span> 出生のシミュレーション</h3>
+<div id="関数を定義する" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> 関数を定義する</h3>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="01-02.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb26-2"><a href="01-02.html#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb26-3"><a href="01-02.html#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb26-4"><a href="01-02.html#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb26-5"><a href="01-02.html#cb26-5" aria-hidden="true" tabindex="-1"></a>ym_to_t <span class="ot">=</span> <span class="cf">function</span>(<span class="at">yyyymm =</span> <span class="st">&quot;2022/06&quot;</span>){</span>
+<span id="cb26-6"><a href="01-02.html#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39;  transform YYYY/MM to time value</span></span>
+<span id="cb26-7"><a href="01-02.html#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; </span></span>
+<span id="cb26-8"><a href="01-02.html#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; @param yyyymm character : YYYY/MM or YYYY/M</span></span>
+<span id="cb26-9"><a href="01-02.html#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; @usage ym_to_t(yyyymm)</span></span>
+<span id="cb26-10"><a href="01-02.html#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; @return character (time value)</span></span>
+<span id="cb26-11"><a href="01-02.html#cb26-11" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">=</span> yyyymm <span class="sc">%&gt;%</span> <span class="fu">str_split</span>(<span class="st">&quot;/&quot;</span>) <span class="sc">%&gt;%</span> .[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> <span class="fu">as.numeric</span>()</span>
+<span id="cb26-12"><a href="01-02.html#cb26-12" aria-hidden="true" tabindex="-1"></a>  tmp[<span class="dv">2</span>] <span class="ot">=</span> tmp[<span class="dv">2</span>] <span class="sc">-</span> <span class="fl">0.5</span></span>
+<span id="cb26-13"><a href="01-02.html#cb26-13" aria-hidden="true" tabindex="-1"></a>  tmp[<span class="dv">2</span>] <span class="ot">=</span> tmp[<span class="dv">2</span>] <span class="sc">/</span> <span class="dv">12</span></span>
+<span id="cb26-14"><a href="01-02.html#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">as.character</span>(<span class="fu">sum</span>(tmp)))</span>
+<span id="cb26-15"><a href="01-02.html#cb26-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-16"><a href="01-02.html#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="01-02.html#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="01-02.html#cb26-18" aria-hidden="true" tabindex="-1"></a>t_to_ym <span class="ot">=</span> <span class="cf">function</span>(time){</span>
+<span id="cb26-19"><a href="01-02.html#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39;  transform time value to YYYY/MM</span></span>
+<span id="cb26-20"><a href="01-02.html#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; </span></span>
+<span id="cb26-21"><a href="01-02.html#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; @param time string or numeric : year value (ex. 2022) + month value (ex.0.3),</span></span>
+<span id="cb26-22"><a href="01-02.html#cb26-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; @usage t_to_ym(time)</span></span>
+<span id="cb26-23"><a href="01-02.html#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="co">#&#39; @return character : &quot;YYYY/MM&quot;</span></span>
+<span id="cb26-24"><a href="01-02.html#cb26-24" aria-hidden="true" tabindex="-1"></a>  time <span class="ot">=</span> <span class="fu">as.numeric</span>(time)</span>
+<span id="cb26-25"><a href="01-02.html#cb26-25" aria-hidden="true" tabindex="-1"></a>  year <span class="ot">=</span> <span class="fu">as.integer</span>(time)</span>
+<span id="cb26-26"><a href="01-02.html#cb26-26" aria-hidden="true" tabindex="-1"></a>  month <span class="ot">=</span> <span class="fu">as.integer</span>( (time <span class="sc">-</span> year) <span class="sc">*</span> <span class="dv">12</span> ) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb26-27"><a href="01-02.html#cb26-27" aria-hidden="true" tabindex="-1"></a>  month <span class="ot">=</span> <span class="fu">max</span>(<span class="fu">min</span>(month, <span class="dv">12</span>), <span class="dv">1</span>)</span>
+<span id="cb26-28"><a href="01-02.html#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(year, <span class="fu">sprintf</span>(<span class="st">&quot;%02d&quot;</span>, month), <span class="at">sep =</span> <span class="st">&quot;/&quot;</span>) <span class="sc">%&gt;%</span> return</span>
+<span id="cb26-29"><a href="01-02.html#cb26-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-30"><a href="01-02.html#cb26-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-31"><a href="01-02.html#cb26-31" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;2222/6&quot;</span>, <span class="st">&quot;2022/5&quot;</span>)</span>
+<span id="cb26-32"><a href="01-02.html#cb26-32" aria-hidden="true" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">tmp1 =</span> tmp)</span>
+<span id="cb26-33"><a href="01-02.html#cb26-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-34"><a href="01-02.html#cb26-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-35"><a href="01-02.html#cb26-35" aria-hidden="true" tabindex="-1"></a><span class="do">## テスト</span></span>
+<span id="cb26-36"><a href="01-02.html#cb26-36" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb26-37"><a href="01-02.html#cb26-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tmp2 =</span> <span class="fu">map_chr</span>(.<span class="sc">$</span>tmp, ym_to_t)) <span class="sc">%&gt;%</span> </span>
+<span id="cb26-38"><a href="01-02.html#cb26-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tmp3 =</span> <span class="fu">map_chr</span>(.<span class="sc">$</span>tmp2, t_to_ym))</span></code></pre></div>
+<pre><code>##     tmp1             tmp2    tmp3
+## 1 2222/6 2222.45833333333 2222/06
+## 2 2022/5         2022.375 2022/05</code></pre>
 </div>
-<div id="死亡のシミュレーション" class="section level3" number="2.2.2">
-<h3><span class="header-section-number">2.2.2</span> 死亡のシミュレーション</h3>
+<div id="出生のシミュレーション" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> 出生のシミュレーション</h3>
+<p>出征シミュレーション用のデータ読み込み。(01-01で作成したもの)</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="01-02.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb28-2"><a href="01-02.html#cb28-2" aria-hidden="true" tabindex="-1"></a>df_birth <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="st">&quot;./data/ipss_birth.csv&quot;</span>)</span></code></pre></div>
+<pre><code>## Rows: 146 Columns: 5</code></pre>
+<pre><code>## ─ Column specification ──────────────────────
+## Delimiter: &quot;,&quot;
+## chr (1): Sex
+## dbl (4): Year, Life, ratio, cum_sum</code></pre>
+<pre><code>## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="01-02.html#cb32-1" aria-hidden="true" tabindex="-1"></a>df_birth <span class="sc">%&gt;%</span> head</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+##    Year Sex      Life   ratio cum_sum
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1  1947 F     1301806 0.0118   0.0118
+## 2  1948 F     1303060 0.0119   0.0237
+## 3  1949 F     1316630 0.0120   0.0357
+## 4  1950 F     1134396 0.0103   0.0460
+## 5  1951 F     1043048 0.00949  0.0555
+## 6  1952 F      977101 0.00889  0.0644</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="01-02.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 0-1の値から、cumsumを参照して、行番号を返す仕組み</span></span>
+<span id="cb34-2"><a href="01-02.html#cb34-2" aria-hidden="true" tabindex="-1"></a>vec <span class="ot">=</span> df_birth<span class="sc">$</span>cum_sum</span>
+<span id="cb34-3"><a href="01-02.html#cb34-3" aria-hidden="true" tabindex="-1"></a>vec_ <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, vec[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(vec)<span class="sc">-</span><span class="dv">1</span>)])</span>
+<span id="cb34-4"><a href="01-02.html#cb34-4" aria-hidden="true" tabindex="-1"></a>dat_row <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">row_num =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(vec), <span class="at">left =</span> vec_, <span class="at">right =</span> vec)</span>
+<span id="cb34-5"><a href="01-02.html#cb34-5" aria-hidden="true" tabindex="-1"></a>df_birth<span class="sc">$</span>left <span class="ot">=</span> vec_</span>
+<span id="cb34-6"><a href="01-02.html#cb34-6" aria-hidden="true" tabindex="-1"></a>df_birth<span class="sc">$</span>right <span class="ot">=</span> vec</span></code></pre></div>
+<p>擬似生成のためのパラメータを設定。</p>
+<p>観察期間は、指数分布を使っていい感じに決める。</p>
+<p>np.random.exponentialのmuと、rexpのrateは、逆数の関係らしいので、注意する。</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="01-02.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 観察期間</span></span>
+<span id="cb35-2"><a href="01-02.html#cb35-2" aria-hidden="true" tabindex="-1"></a>start_study_t <span class="ot">=</span> <span class="dv">2010</span>   <span class="do">## 2010年1月</span></span>
+<span id="cb35-3"><a href="01-02.html#cb35-3" aria-hidden="true" tabindex="-1"></a>end_study_t <span class="ot">=</span> <span class="fl">2019.999</span> <span class="do">## 2019年12月</span></span>
+<span id="cb35-4"><a href="01-02.html#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="01-02.html#cb35-5" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> <span class="dv">10</span> <span class="do">## 指数分布のパラメータ 観察開始/終了期間が決まる</span></span>
+<span id="cb35-6"><a href="01-02.html#cb35-6" aria-hidden="true" tabindex="-1"></a>rate <span class="ot">=</span> <span class="dv">1</span><span class="sc">/</span>mu</span>
+<span id="cb35-7"><a href="01-02.html#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="01-02.html#cb35-8" aria-hidden="true" tabindex="-1"></a>N <span class="ot">=</span> <span class="dv">5000</span> <span class="do">## 全体の人数</span></span>
+<span id="cb35-9"><a href="01-02.html#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-10"><a href="01-02.html#cb35-10" aria-hidden="true" tabindex="-1"></a>family_ratio <span class="ot">=</span> <span class="fl">0.3</span> <span class="do">## 被扶養者が占める割合</span></span></code></pre></div>
+<p>乱数で保険者を生成する。誕生年の分布は、df_birthに従うことにする。</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="01-02.html#cb36-1" aria-hidden="true" tabindex="-1"></a>N_ <span class="ot">=</span> N <span class="sc">*</span> <span class="dv">20</span></span>
+<span id="cb36-2"><a href="01-02.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">71</span>)</span>
+<span id="cb36-3"><a href="01-02.html#cb36-3" aria-hidden="true" tabindex="-1"></a>random_value <span class="ot">=</span> <span class="fu">runif</span>(N_)</span>
+<span id="cb36-4"><a href="01-02.html#cb36-4" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">value =</span> random_value)</span>
+<span id="cb36-5"><a href="01-02.html#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="01-02.html#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 誕生月判定と、曝露期間の設定</span></span>
+<span id="cb36-7"><a href="01-02.html#cb36-7" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="ot">=</span> df_exposure <span class="sc">%&gt;%</span> </span>
+<span id="cb36-8"><a href="01-02.html#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(df_birth, <span class="at">all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-9"><a href="01-02.html#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(left <span class="sc">&lt;=</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-10"><a href="01-02.html#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(value <span class="sc">&lt;=</span> right) <span class="sc">%&gt;%</span></span>
+<span id="cb36-11"><a href="01-02.html#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>left, <span class="sc">-</span>right, <span class="sc">-</span>value) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-12"><a href="01-02.html#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">runif</span>(<span class="fu">nrow</span>(.))) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-13"><a href="01-02.html#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> Year <span class="sc">+</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-14"><a href="01-02.html#cb36-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">birth_ym =</span> <span class="fu">map_chr</span>(value, t_to_ym)) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-15"><a href="01-02.html#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value1 =</span> <span class="fu">rexp</span>(<span class="fu">nrow</span>(.), <span class="at">rate =</span> rate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-16"><a href="01-02.html#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value2 =</span> <span class="fu">rexp</span>(<span class="fu">nrow</span>(.), <span class="at">rate =</span> rate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-17"><a href="01-02.html#cb36-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">start_t =</span> start_study_t <span class="sc">-</span> mu <span class="sc">+</span> value1) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-18"><a href="01-02.html#cb36-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">end_t =</span> start_t <span class="sc">+</span> value2) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-19"><a href="01-02.html#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(start_t <span class="sc">&gt;=</span> start_study_t) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-20"><a href="01-02.html#cb36-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(end_t <span class="sc">&lt;=</span> end_study_t) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-21"><a href="01-02.html#cb36-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">start_obs_ym =</span> <span class="fu">map_chr</span>(start_t, t_to_ym)) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-22"><a href="01-02.html#cb36-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">end_obs_ym =</span> <span class="fu">map_chr</span>(end_t, t_to_ym)) </span>
+<span id="cb36-23"><a href="01-02.html#cb36-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-24"><a href="01-02.html#cb36-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 被扶養者判定と、後処理</span></span>
+<span id="cb36-25"><a href="01-02.html#cb36-25" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="ot">=</span> df_exposure <span class="sc">%&gt;%</span> </span>
+<span id="cb36-26"><a href="01-02.html#cb36-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">runif</span>(<span class="fu">nrow</span>(.))) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-27"><a href="01-02.html#cb36-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">family =</span> <span class="fu">if_else</span>(value <span class="sc">&lt;</span> family_ratio, <span class="dv">2</span>, <span class="dv">1</span> )) <span class="sc">%&gt;%</span> <span class="do">## 1なら本人</span></span>
+<span id="cb36-28"><a href="01-02.html#cb36-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>value, <span class="sc">-</span>value1, <span class="sc">-</span>value2, <span class="sc">-</span>start_t, <span class="sc">-</span>end_t) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-29"><a href="01-02.html#cb36-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">iid =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.)) <span class="sc">%&gt;%</span> </span>
+<span id="cb36-30"><a href="01-02.html#cb36-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">iid =</span> <span class="fu">paste</span>(<span class="st">&quot;i&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;%06d&quot;</span>, iid, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)))</span>
+<span id="cb36-31"><a href="01-02.html#cb36-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-32"><a href="01-02.html#cb36-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 整形</span></span>
+<span id="cb36-33"><a href="01-02.html#cb36-33" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="ot">=</span> </span>
+<span id="cb36-34"><a href="01-02.html#cb36-34" aria-hidden="true" tabindex="-1"></a>  df_exposure <span class="sc">%&gt;%</span> </span>
+<span id="cb36-35"><a href="01-02.html#cb36-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(iid, Sex, birth_ym, start_obs_ym, end_obs_ym)</span>
+<span id="cb36-36"><a href="01-02.html#cb36-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-37"><a href="01-02.html#cb36-37" aria-hidden="true" tabindex="-1"></a><span class="do">## 行数の確保</span></span>
+<span id="cb36-38"><a href="01-02.html#cb36-38" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="ot">=</span> </span>
+<span id="cb36-39"><a href="01-02.html#cb36-39" aria-hidden="true" tabindex="-1"></a>  df_exposure <span class="sc">%&gt;%</span> <span class="fu">sample_n</span>(<span class="at">size =</span> N, <span class="at">replace =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb36-40"><a href="01-02.html#cb36-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-41"><a href="01-02.html#cb36-41" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="sc">%&gt;%</span> head</span></code></pre></div>
+<pre><code>##        iid Sex birth_ym start_obs_ym end_obs_ym
+## 1 i 000800   F  1955/11      2011/01    2016/09
+## 2 i 005929   M  1959/01      2016/08    2018/03
+## 3 i 003572   F  1996/02      2011/04    2015/01
+## 4 i 007193   M  1975/02      2013/10    2019/12
+## 5 i 007360   M  1976/10      2012/11    2014/12
+## 6 i 001612   F  1967/04      2010/08    2013/08</code></pre>
+<div id="出生比率の確認" class="section level4" number="2.2.2.1">
+<h4><span class="header-section-number">2.2.2.1</span> 出生比率の確認</h4>
+<p>df_birthで集計した真の誕生年比率と、擬似生成した誕生比率を比較してみる。</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="01-02.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 擬似生成したデータの誕生年比率集計</span></span>
+<span id="cb38-2"><a href="01-02.html#cb38-2" aria-hidden="true" tabindex="-1"></a>df_reproducted_birth <span class="ot">=</span></span>
+<span id="cb38-3"><a href="01-02.html#cb38-3" aria-hidden="true" tabindex="-1"></a>  df_exposure <span class="sc">%&gt;%</span> </span>
+<span id="cb38-4"><a href="01-02.html#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(birth_ym) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-5"><a href="01-02.html#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">birth_year =</span> <span class="fu">as.integer</span>(<span class="fu">substr</span>(birth_ym, <span class="dv">1</span>, <span class="dv">4</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-6"><a href="01-02.html#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>birth_ym) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-7"><a href="01-02.html#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(birth_year) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-8"><a href="01-02.html#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>() <span class="sc">%&gt;%</span>  </span>
+<span id="cb38-9"><a href="01-02.html#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Reproducted_Ratio =</span> n<span class="sc">/</span>N) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-10"><a href="01-02.html#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> birth_year) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-11"><a href="01-02.html#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb38-12"><a href="01-02.html#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>n, <span class="sc">-</span>birth_year) <span class="sc">%&gt;%</span> </span>
+<span id="cb38-13"><a href="01-02.html#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Year, Reproducted_Ratio)</span>
+<span id="cb38-14"><a href="01-02.html#cb38-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-15"><a href="01-02.html#cb38-15" aria-hidden="true" tabindex="-1"></a>df_reproducted_birth <span class="sc">%&gt;%</span> head</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##    Year Reproducted_Ratio
+##   &lt;int&gt;             &lt;dbl&gt;
+## 1  1947            0.0258
+## 2  1948            0.029 
+## 3  1949            0.0256
+## 4  1950            0.019 
+## 5  1951            0.0194
+## 6  1952            0.0196</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="01-02.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 真の誕生年比率の集計</span></span>
+<span id="cb40-2"><a href="01-02.html#cb40-2" aria-hidden="true" tabindex="-1"></a>df_true_birth <span class="ot">=</span> </span>
+<span id="cb40-3"><a href="01-02.html#cb40-3" aria-hidden="true" tabindex="-1"></a>  df_birth <span class="sc">%&gt;%</span> </span>
+<span id="cb40-4"><a href="01-02.html#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-5"><a href="01-02.html#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">True_Ratio =</span> <span class="fu">sum</span>(ratio)) <span class="sc">%&gt;%</span></span>
+<span id="cb40-6"><a href="01-02.html#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">as.integer</span>(Year))</span>
+<span id="cb40-7"><a href="01-02.html#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-8"><a href="01-02.html#cb40-8" aria-hidden="true" tabindex="-1"></a>df_true_birth <span class="sc">%&gt;%</span> head</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##    Year True_Ratio
+##   &lt;int&gt;      &lt;dbl&gt;
+## 1  1947     0.0244
+## 2  1948     0.0244
+## 3  1949     0.0245
+## 4  1950     0.0213
+## 5  1951     0.0195
+## 6  1952     0.0182</code></pre>
+<p>可視化します。</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="01-02.html#cb42-1" aria-hidden="true" tabindex="-1"></a>df_birth_compare <span class="ot">=</span> <span class="fu">merge</span>(df_reproducted_birth, df_true_birth, <span class="at">by =</span> <span class="st">&quot;Year&quot;</span>)</span>
+<span id="cb42-2"><a href="01-02.html#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="01-02.html#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb42-4"><a href="01-02.html#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="01-02.html#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 縦持ちして、ggplotします</span></span>
+<span id="cb42-6"><a href="01-02.html#cb42-6" aria-hidden="true" tabindex="-1"></a>df_birth_compare_long <span class="ot">=</span> </span>
+<span id="cb42-7"><a href="01-02.html#cb42-7" aria-hidden="true" tabindex="-1"></a>  df_birth_compare <span class="sc">%&gt;%</span> </span>
+<span id="cb42-8"><a href="01-02.html#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(group, value, <span class="sc">-</span>Year)</span>
+<span id="cb42-9"><a href="01-02.html#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="01-02.html#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb42-11"><a href="01-02.html#cb42-11" aria-hidden="true" tabindex="-1"></a>df_birth_compare_long <span class="sc">%&gt;%</span> </span>
+<span id="cb42-12"><a href="01-02.html#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> value, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb42-13"><a href="01-02.html#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb42-14"><a href="01-02.html#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Birth Ratio&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb42-15"><a href="01-02.html#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb42-16"><a href="01-02.html#cb42-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<p><img src="python-medical-data_files/figure-html/unnamed-chunk-379-1.png" width="672" /></p>
+<p>…まあ、真の値から上下にブレている…かな…？</p>
+<p>1966年は丙午ですね。これで、出生のシミュレーションができました。</p>
 </div>
-<div id="まとめ" class="section level3" number="2.2.3">
-<h3><span class="header-section-number">2.2.3</span> まとめ</h3>
+</div>
+<div id="死亡のシミュレーション" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> 死亡のシミュレーション</h3>
+</div>
+<div id="まとめ" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> まとめ</h3>
 
 </div>
 </div>
