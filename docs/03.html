@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 3 出生・死亡のシミュレーション (1-2) | Python医療データ分析本をRでやる</title>
+  <title>Chapter 3 血圧別発生率に挑戦 | Python医療データ分析本をRでやる</title>
   <meta name="description" content="Python医療データ分析本をRでやってbookdownで公開します" />
-  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 3 出生・死亡のシミュレーション (1-2) | Python医療データ分析本をRでやる" />
+  <meta property="og:title" content="Chapter 3 血圧別発生率に挑戦 | Python医療データ分析本をRでやる" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 3 出生・死亡のシミュレーション (1-2) | Python医療データ分析本をRでやる" />
+  <meta name="twitter:title" content="Chapter 3 血圧別発生率に挑戦 | Python医療データ分析本をRでやる" />
   
   <meta name="twitter:description" content="Python医療データ分析本をRでやってbookdownで公開します" />
   
@@ -24,16 +24,18 @@
 <meta name="author" content="gg_hatano" />
 
 
-<meta name="date" content="2020-08-23" />
+<meta name="date" content="2022-02-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="前準備1-1.html"/>
-
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link rel="prev" href="02.html"/>
+<link rel="next" href="04.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -49,23 +51,23 @@
 
 
 
-
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -85,7 +87,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -118,6 +120,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -131,19 +134,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">A Minimal Book Example</a></li>
+<li><a href="./">Synthetic Medical Data Analysis</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> はじめに</a></li>
-<li class="chapter" data-level="2" data-path="前準備1-1.html"><a href="前準備1-1.html"><i class="fa fa-check"></i><b>2</b> 前準備(1-1)</a><ul>
-<li class="chapter" data-level="2.1" data-path="前準備1-1.html"><a href="前準備1-1.html#出生率データの取得"><i class="fa fa-check"></i><b>2.1</b> 出生率データの取得</a></li>
-<li class="chapter" data-level="2.2" data-path="前準備1-1.html"><a href="前準備1-1.html#死亡データの取得と整形"><i class="fa fa-check"></i><b>2.2</b> 死亡データの取得と整形</a></li>
-<li class="chapter" data-level="2.3" data-path="前準備1-1.html"><a href="前準備1-1.html#ここまでやったこと"><i class="fa fa-check"></i><b>2.3</b> ここまでやったこと</a></li>
-<li class="chapter" data-level="2.4" data-path="前準備1-1.html"><a href="前準備1-1.html#つぎにやること"><i class="fa fa-check"></i><b>2.4</b> つぎにやること</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>はじめに</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#この本でやること"><i class="fa fa-check"></i><b>0.1</b> この本でやること</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#注意点"><i class="fa fa-check"></i><b>0.2</b> 注意点</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#分析環境の構築方法"><i class="fa fa-check"></i><b>0.3</b> 分析環境の構築方法</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="出生死亡のシミュレーション-1-2.html"><a href="出生死亡のシミュレーション-1-2.html"><i class="fa fa-check"></i><b>3</b> 出生・死亡のシミュレーション (1-2)</a><ul>
-<li class="chapter" data-level="3.1" data-path="出生死亡のシミュレーション-1-2.html"><a href="出生死亡のシミュレーション-1-2.html#出生のシミュレーション"><i class="fa fa-check"></i><b>3.1</b> 出生のシミュレーション</a></li>
+<li class="chapter" data-level="1" data-path="01.html"><a href="01.html"><i class="fa fa-check"></i><b>1</b> 死亡率を推定しよう</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="01.html"><a href="01.html#日本版死亡データベースの取得集計"><i class="fa fa-check"></i><b>1.1</b> 日本版死亡データベースの取得・集計</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="01.html"><a href="01.html#出生率データの取得"><i class="fa fa-check"></i><b>1.1.1</b> 出生率データの取得</a></li>
+<li class="chapter" data-level="1.1.2" data-path="01.html"><a href="01.html#死亡データの取得と整形"><i class="fa fa-check"></i><b>1.1.2</b> 死亡データの取得と整形</a></li>
 </ul></li>
+<li class="chapter" data-level="1.2" data-path="01.html"><a href="01.html#加入者情報レコードの擬似生成"><i class="fa fa-check"></i><b>1.2</b> 加入者情報レコードの擬似生成</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="01.html"><a href="01.html#関数を定義する"><i class="fa fa-check"></i><b>1.2.1</b> 関数を定義する</a></li>
+<li class="chapter" data-level="1.2.2" data-path="01.html"><a href="01.html#出生のシミュレーション"><i class="fa fa-check"></i><b>1.2.2</b> 出生のシミュレーション</a></li>
+<li class="chapter" data-level="1.2.3" data-path="01.html"><a href="01.html#出生比率の確認"><i class="fa fa-check"></i><b>1.2.3</b> 出生比率の確認</a></li>
+<li class="chapter" data-level="1.2.4" data-path="01.html"><a href="01.html#死亡のシミュレーション"><i class="fa fa-check"></i><b>1.2.4</b> 死亡のシミュレーション</a></li>
+<li class="chapter" data-level="1.2.5" data-path="01.html"><a href="01.html#日付の整合性チェック"><i class="fa fa-check"></i><b>1.2.5</b> 日付の整合性チェック</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="01.html"><a href="01.html#まとめ"><i class="fa fa-check"></i><b>1.3</b> まとめ</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="02.html"><a href="02.html"><i class="fa fa-check"></i><b>2</b> 発生率を推定しよう</a></li>
+<li class="chapter" data-level="3" data-path="03.html"><a href="03.html"><i class="fa fa-check"></i><b>3</b> 血圧別発生率に挑戦</a></li>
+<li class="chapter" data-level="4" data-path="04.html"><a href="04.html"><i class="fa fa-check"></i><b>4</b> 医療統計の導入</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -164,25 +183,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="出生死亡のシミュレーション-1-2" class="section level1">
-<h1><span class="header-section-number">Chapter 3</span> 出生・死亡のシミュレーション (1-2)</h1>
-<p>出生と死亡をシミュレーションして、擬似健康保険組合データを作成する。</p>
-<div id="出生のシミュレーション" class="section level2">
-<h2><span class="header-section-number">3.1</span> 出生のシミュレーション</h2>
+<div id="血圧別発生率に挑戦" class="section level1" number="3">
+<h1><span class="header-section-number">Chapter 3</span> 血圧別発生率に挑戦</h1>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="前準備1-1.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="02.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="04.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -201,6 +215,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
@@ -221,6 +236,10 @@ gitbook.start({
 "text": null
 },
 "download": ["python-medical-data.pdf", "python-medical-data.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }

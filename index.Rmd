@@ -13,5 +13,22 @@ output:
     split_by: rmd
 ---
 
+# はじめに {-}
 
+## この本でやること
+[Pythonによる医療データ分析入門―pandas＋擬似レセプト編](https://gihyo.jp/book/2020/978-4-297-11517-3)をRでやってみる、という内容です。
+
+ソースコードは[GitHub](https://github.com/gghatano/python_synthetic_medical_data)にも置いていきます。
+
+## 注意点
+
+python->Rとしているので、参考文献と比べて実装方針が異なるところがあります。
+
+特に、for文を回すところは、できるだけdataframeの操作でなんとかしているので、実装が大きく異なります。
+
+## 分析環境の構築方法
+
+[GitHub](https://github.com/gghatano/python_synthetic_medical_data)のソースコードをダウンロードして、RstudioでRmdファイルを実行しましょう。
+
+利用するライブラリは後で整理しておきます。
 

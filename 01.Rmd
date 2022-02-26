@@ -1,0 +1,499 @@
+# 死亡率を推定しよう
+
+1章です。擬似健康保険データを生成して、死亡率を推定します。
+
+```{r global_options, include=FALSE}
+rm(list=ls()) ### To clear namespace
+library(knitr)
+opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figs/',
+               echo=TRUE, warning=FALSE, message=FALSE)
+```
+
+## 日本版死亡データベースの取得・集計
+
+健保組合データを擬似生成するために、出生・志望の公的統計を利用する。
+
+乱数でシミュレーションするために必要な情報を集計して求める。
+
+### 出生率データの取得
+
+[IPSS](http://www.ipss.go.jp/)が公開している、年次出生数のデータを利用する。
+
+```{r, message=FALSE}
+library(readr)
+library(dplyr)
+url = 'http://www.ipss.go.jp/p-toukei/JMD/00/STATS/Births.txt'
+dat = read.table(url, skip=2, header = TRUE)
+dat %>% head
+```
+ある年に、FemaleとMaleが何人生まれたかのデータになっている。
+
+乱数を利用して、誕生年と性別をサンプリングしたい。性別列を作って縦に持っておく。
+
+```{r, message=FALSE}
+library(tidyr)
+library(magrittr)
+dat %>%  
+  pivot_longer(cols = c("Male", "Female"), names_to = "Sex", values_to = "Life") %>% 
+  mutate(Sex = if_else(Sex == "Female", "F", "M")) -> dat
+dat
+```
+
+乱数でシミュレーションをするために、累積比率を出しておく
+
+```{r}
+dat %<>%
+  arrange(Sex, Year)
+dat %<>%
+  mutate(ratio = Life / sum(Life)) %>%
+  mutate(cum_sum = cumsum(ratio))
+
+
+dat %>% 
+  select(-Total) %>% 
+  write.csv("./data/ipss_birth.csv", row.names=FALSE, quote = FALSE)
+## 内容確認
+dat %>% 
+  select(-Total) %>% 
+  head(100)
+```
+
+
+累積確率分布を作る。これにより、一様乱数(y軸:0-1)から、対応する行番号が得られて、
+行番号から、(出生年,性別)を得ることができる。
+
+欲しい人数分だけ一様乱数を取れば、出生のデータが得られる。
+
+```{r}
+library(ggplot2)
+dat = read_csv("./data/ipss_birth.csv")
+
+dat %>% 
+  mutate(x_axis = paste(Year, Sex, sep="")) %>% 
+  mutate(row_num = 1:nrow(.)) %>% 
+  ggplot() + 
+  geom_line(aes(x = row_num, y = cum_sum), stat = "identity") +
+  annotate("segment",x=1,xend=96,y=0.7,yend=0.7,colour="blue",
+    size=1, arrow=arrow()) + 
+  annotate("segment",x=98,xend=98,y=0.7,yend=0.0,colour="blue",
+     size=1,arrow=arrow()) + 
+
+    annotate("text", x=20, y=0.75, parse=TRUE, label="'Random Number 0.7'") +
+  annotate("text", x=125, y=0.2, parse=TRUE, label="'Rownum: 98 -> 1971-Male'") +
+  ggtitle("Cumulative ratio of Population Birth")
+
+```
+
+これを利用して、出生のシミュレーションができる。
+
+
+### 死亡データの取得と整形
+
+次は、死亡率を算出して、死亡のシミュレーションを行う。
+
+```{r}
+url_death_rate = "http://www.ipss.go.jp/p-toukei/JMD/00/STATS/Mx_1x1.txt"
+dat = read.table(url_death_rate, skip=2, header = TRUE)
+dat %>% str
+
+```
+
+死亡率のデータは、Year年にX才だった人が1年後に死んでいる確率を表している。(本当に？)
+
+今回は簡単のために、2016年の死亡率でシミュレーションを行う。
+
+```{r}
+dat %<>% 
+  filter(Year == 2016) %>% 
+  select(-Year) %>% 
+  select(-Total)
+```
+
+Ageがcharになっているので、確認する。
+
+```{r}
+dat$Age %>% table
+```
+110+があるので、これは簡単のために111才にしておく。
+
+```{r}
+dat %<>%
+  mutate(Age = if_else(Age == "110+", "111", Age)) %>% 
+  mutate(Age = as.integer(Age)) 
+
+dat %<>%
+  mutate(Anb = Age) %>% 
+  select(-Age)
+
+dat %>% head
+```
+
+AnbとAlbについては、あとで追記する。Anbなので、Albに直す。
+
+$x$才のAnb死亡率$q_x$とすると、Alb死亡率は、$\frac{q_x+q_{x+1}}{2}$になる。
+
+```{r}
+dat %<>%
+  mutate(Female = as.numeric(Female)) %>%
+  mutate(Male = as.numeric(Male)) %>% 
+  mutate(lead_Female = lead(Female)) %>% 
+  mutate(lead_Male = lead(Male)) %>% 
+  mutate(F = (Female + lead_Female)/2) %>% 
+  mutate(M = (Male + lead_Male)/2) %>% 
+  mutate(Alb = Anb) %>% 
+  select(Alb,F,M)
+
+dat %>% head
+```
+
+年次死亡率を可視化してみる。
+横軸が年齢、縦軸が1年以内に死亡する確率。
+```{r}
+dat %>% 
+  pivot_longer(cols=c("F","M"), names_to = "Sex", values_to = "Mortarity") %>% 
+  ggplot(aes(x = Alb, y = Mortarity, group = Sex, color = Sex)) + 
+  geom_line() + 
+  geom_hline(yintercept = 1.0, linetype = "dashed") + 
+  annotate("text", x = 10, y = 1.05, label = 'Mortarity: 1.0') + 
+  ggtitle("Mortarity")
+```
+
+高齢部分が不自然だが、そういうものらしい。100才以上は使わない、として切り捨てる。
+
+また、年次死亡率を月次死亡率に変換する。
+
+年次死亡率を$y$、月次死亡率を$x$とすると、
+
+$y = 1 - (1-x)^{12}$なので、$x$について解くと、$x = 1 - (1-y)^{0.08...}$になる。これにより、月次死亡率が得られる。
+
+```{r}
+dat %<>%
+  filter(Alb < 100)
+
+dat %<>% 
+  mutate(F = 1 - (1-F)**(1/12)) %>% 
+  mutate(M = 1 - (1-M)**(1/12)) 
+
+dat %>% write.csv("./data/ipss_mortality.csv", quote=F, row.names = F)
+dat %>% 
+  mutate(F = round(F, 7)) %>% 
+  mutate(M = round(M, 7)) %>% 
+  head
+
+```
+
+## 加入者情報レコードの擬似生成
+
+出生と死亡をシミュレーションして、擬似健康保険加入者レコードを集積したデータセットを作成します。
+
+### 関数を定義する
+
+まずは、乱数でシミュレーションをするときに使う関数を定義しておきます。
+
+日付<->数字の変換をよく行うので、関数化しておきます。
+
+```{r}
+library(magrittr)
+library(dplyr)
+library(stringr)
+library(purrr)
+ym_to_t = function(yyyymm = "2022/06"){
+  #'  transform YYYY/MM to time value
+  #' 
+  #' @param yyyymm character : YYYY/MM or YYYY/M
+  #' @usage ym_to_t(yyyymm)
+  #' @return character (time value)
+  tmp = yyyymm %>% str_split("/") %>% .[[1]] %>% as.numeric()
+  tmp[2] = tmp[2] - 0.5
+  tmp[2] = tmp[2] / 12
+  return(as.character(sum(tmp)))
+}
+
+
+t_to_ym = function(time){
+  #'  transform time value to YYYY/MM
+  #' 
+  #' @param time string or numeric : year value (ex. 2022) + month value (ex.0.3),
+  #' @usage t_to_ym(time)
+  #' @return character : "YYYY/MM"
+  time = as.numeric(time)
+  year = as.integer(time)
+  month = as.integer( (time - year) * 12 ) + 1
+  month = max(min(month, 12), 1)
+  paste(year, sprintf("%02d", month), sep = "/") %>% return
+}
+
+
+## テスト
+tmp = c("2222/6", "2022/5")
+df = data.frame(tmp1 = tmp)
+df %>% 
+  mutate(tmp2 = map_chr(.$tmp, ym_to_t)) %>% 
+  mutate(tmp3 = map_chr(.$tmp2, t_to_ym))
+
+```
+### 出生のシミュレーション
+
+出生シミュレーション用のデータを読み込みます。(01-01で作成したもの)
+```{r}
+library(readr)
+df_birth = read_csv("./data/ipss_birth.csv")
+df_birth %>% head
+```
+
+
+0-1の乱数から、誕生年・性別を決めたいです。
+
+1950年男性の累積出生割合が0.1、1951年男性の累積出生割合が0.2なら、
+0.1<= (乱数) <= 0.2 だったときに、1951年男性が生まれたことにする、みたいな感じです。
+乱数を生成して、leftとrightで挟めているところを探す、という戦略です。
+```{r}
+## 0-1の値から、cumsumを参照して、行番号を返す仕組み
+vec = df_birth$cum_sum
+vec_ = c(0, vec[1:(length(vec)-1)])
+dat_row = data.frame(row_num = 1:length(vec), left = vec_, right = vec)
+df_birth$left = vec_
+df_birth$right = vec
+
+df_birth %>% select(-Life) %>% head
+```
+
+次に、擬似生成のためのパラメータを設定します。
+
+観察期間は、指数分布を使っていい感じに決めます。
+
+pythonのnp.random.exponentialの引数muと、Rのrexpの引数rateは、逆数の関係らしいので、注意します。
+
+```{r}
+## 観察期間
+start_study_t = 2010   ## 2010年1月
+end_study_t = 2019.999 ## 2019年12月
+
+mu = 10 ## 指数分布のパラメータ 観察開始/終了期間が決まる
+rate = 1/mu
+
+N = 5000 ## 全体の人数
+
+family_ratio = 0.3 ## 被扶養者が占める割合
+```
+
+乱数で保険者を生成します。誕生年の分布は、df_birthに従わせます。
+
+```{r}
+N_ = N * 20
+set.seed(71)
+random_value = runif(N_)
+df_exposure = data.frame(value = random_value)
+
+## 誕生月判定と、曝露期間の設定
+df_exposure = df_exposure %>% 
+  merge(df_birth, all = TRUE) %>% 
+  filter(left <= value) %>% 
+  filter(value <= right) %>%
+  select(-left, -right, -value) %>% 
+  mutate(value = runif(nrow(.))) %>% 
+  mutate(value = Year + value) %>% 
+  mutate(birth_ym = map_chr(value, t_to_ym)) %>% 
+  mutate(value1 = rexp(nrow(.), rate = rate)) %>% 
+  mutate(value2 = rexp(nrow(.), rate = rate)) %>% 
+  mutate(start_t = start_study_t - mu + value1) %>% 
+  mutate(end_t = start_t + value2) %>% 
+  filter(start_t >= start_study_t) %>% 
+  filter(end_t <= end_study_t) %>% 
+  mutate(start_obs_ym = map_chr(start_t, t_to_ym)) %>% 
+  mutate(end_obs_ym = map_chr(end_t, t_to_ym)) 
+
+df_exposure %>% head
+```
+
+被扶養者かどうかも乱数で決めて、IDも付与します。
+```{r}
+## 被扶養者判定と、後処理
+df_exposure = df_exposure %>% 
+  mutate(value = runif(nrow(.))) %>% 
+  mutate(family = if_else(value < family_ratio, 2, 1 )) %>% ## 1なら本人
+  select(-value, -value1, -value2, -start_t, -end_t) %>% 
+  mutate(iid = 1:nrow(.)) %>% 
+  mutate(iid = paste("i", sprintf("%06d", iid), sep = ""))
+
+## 整形
+df_exposure = 
+  df_exposure %>% 
+  select(iid, Sex, birth_ym, start_obs_ym, end_obs_ym)
+
+## 行数の確保
+df_exposure = 
+  df_exposure %>% sample_n(size = N, replace = FALSE) 
+
+df_exposure %>% head
+
+```
+
+いい感じですね。
+
+### 出生比率の確認
+df_birthで集計した真の誕生年比率と、擬似生成した誕生比率を比較してみます。
+
+
+まずは、擬似生成したデータで、出生比率を集計します。
+```{r}
+## 擬似生成したデータの誕生年比率集計
+df_reproducted_birth =
+  df_exposure %>% 
+  select(birth_ym) %>% 
+  mutate(birth_year = as.integer(substr(birth_ym, 1, 4))) %>% 
+  select(-birth_ym) %>% 
+  group_by(birth_year) %>% 
+  count() %>%  
+  mutate(Reproducted_Ratio = n/N) %>% 
+  mutate(Year = birth_year) %>% 
+  ungroup() %>% 
+  select(-n, -birth_year) %>% 
+  select(Year, Reproducted_Ratio)
+
+df_reproducted_birth %>% head
+```
+
+次に、真のデータで、出生比率を集計します。
+```{r}
+## 真の誕生年比率の集計
+df_true_birth = 
+  df_birth %>% 
+  group_by(Year) %>% 
+  summarise(True_Ratio = sum(ratio)) %>%
+  mutate(Year = as.integer(Year))
+
+df_true_birth %>% head
+```
+
+可視化して見た目を比べます。
+
+```{r}
+df_birth_compare = merge(df_reproducted_birth, df_true_birth, by = "Year")
+
+library(tidyr)
+
+## 縦持ちして、ggplotします
+df_birth_compare_long = 
+  df_birth_compare %>% 
+  gather(group, value, -Year)
+
+library(ggplot2)
+df_birth_compare_long %>% 
+  ggplot(aes(x = Year, y = value, color = group)) + 
+  geom_line() + 
+  ggtitle("Birth Ratio") + 
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1))
+
+```
+
+...まあ、真の値から上下にブレている...かな...？
+
+1966年は丙午ですね。これで、出生のシミュレーションができました。
+
+### 死亡のシミュレーション
+
+次に、死亡をシミュレーションします。月次死亡率を取得します。
+
+```{r}
+df_mortality = read_csv("data/ipss_mortality.csv")
+df_mortality %<>% 
+  gather(sex, mortality, -Alb) %>% 
+  mutate(key = paste(Alb, sex, sep = "_"))
+df_mortality %>% head
+```
+
+年齢ごとに、一定確率で死亡するので、これをシミュレーションします。
+
+```{r}
+## 観察期間全体の期間を作成する
+date_vec = seq(as.Date("2010/01/01"), as.Date("2019/12/01"), by = "month")
+df_month = data.frame(date = date_vec)
+df_month %>% head
+```
+
+誕生日から年齢が計算できるので、各月で当該年齢の死亡率が得られて、乱数で死亡判定ができます。
+
+
+まずは、月毎に、その時の年齢を計算して、死亡率を付与していきます。
+```{r}
+## 月次死亡確率を付与しておく
+df_exposure_mortality = 
+  df_exposure %>% 
+  merge(df_month, all = True) %>% 
+  mutate(birth_tmp = paste(birth_ym, "/01", sep = "")) %>% 
+  mutate(age = (as.Date(date) - as.Date(birth_tmp)) / 365) %>% 
+  mutate(age = as.integer(age)) %>% 
+  mutate(key = paste(age, Sex, sep = "_")) %>% 
+  merge(df_mortality, by = "key") %>% 
+  select(-key, -Alb, -birth_tmp, -Sex)
+
+df_exposure_mortality %>% select(-start_obs_ym, -end_obs_ym) %>% head()
+```
+
+
+乱数で死亡判定をします。
+```{r}
+## 乱数で、死亡判定をする
+df_death_date =
+  df_exposure_mortality %>% 
+  mutate(value = runif(nrow(.))) %>% 
+  mutate(value = value) %>% 
+  mutate(death_flg = value < mortality) %>%  ## 乱数で死亡判定する
+  arrange(iid, date) %>% ## 最初に死亡した時を調べるために、idごとに処理する
+  group_by(iid) %>% 
+  mutate(val = cumsum(death_flg)) %>% ## 最初に0->1になるところで死亡している
+  mutate(val = cumsum(val)) %>%       ## 2回cumsumを取れば、↑は==1のところになる
+  filter(val == 1) %>% 
+  select(iid, death_date = date)
+
+df_death_date %>% head()
+```
+
+最初に死亡判定されたところを抽出しています。
+cumsumを2回重ねがけするテクニックは、いいですね。
+
+
+### 日付の整合性チェック
+
+最後に、出生・死亡と、観察期間との整合性をとります。
+
+```{r}
+## 観察期間との整合性をとる。
+## 死亡していたら、観察期間は死亡日よりも前
+## 観察期間より前に死亡していたら、無視する (それより前に死亡している可能性もありそうだが...)
+df_exposure_death = 
+  df_exposure %>% 
+  left_join(df_death_date, by = "iid") %>% 
+  mutate(start_obs_ym = paste(start_obs_ym, "/01", sep = "")) %>% 
+  mutate(end_obs_ym = paste(end_obs_ym, "/01", sep = "")) %>% 
+  mutate(birth_ym = paste(birth_ym, "/01", sep = "")) %>% 
+  mutate(start_obs_ym = as.Date(start_obs_ym)) %>% 
+  mutate(end_obs_ym = as.Date(end_obs_ym)) %>% 
+  mutate(birth_ym = as.Date(birth_ym)) %>% 
+  mutate(tmp = if_else(is.na(death_date), as.Date("2199/12/31"), death_date)) %>% 
+  mutate(end_obs_ym  = if_else(end_obs_ym > tmp, death_date - 30, end_obs_ym)) %>% 
+  mutate(start_obs_ym  = if_else(start_obs_ym < birth_ym, birth_ym, start_obs_ym)) %>% 
+  filter(start_obs_ym < tmp) %>% 
+  select(-tmp)
+
+  
+## 保存しておく
+df_exposure_death %>% write.csv("./data/pseudo_medical_record.csv", quote = FALSE, row.names = FALSE)
+
+## 内容確認
+df_exposure_death %>% head
+```
+
+それっぽいものはできました...が、
+
+- 観測期間後に死亡した人の扱い
+- 観測期間前に死亡した人の扱い
+
+が気になります。調べておきます。
+
+
+## まとめ
+
+公的統計のデータを用いて、出生、死亡のシミュレーションをして、擬似データを生成しました。
