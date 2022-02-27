@@ -2,6 +2,12 @@
 
 1章です。擬似健康保険データを生成して、死亡率を推定します。
 
+- 公的統計から、性別・年代別の出生・死亡比率を集計する
+- 乱数を用いて、性別・年代別の出生・死亡の擬似データを生成する
+- 擬似データを集計してみて、それっぽくなっているかどうか確認する
+
+という手順です。
+
 ```{r global_options, include=FALSE}
 rm(list=ls()) ### To clear namespace
 library(knitr)
@@ -11,64 +17,69 @@ opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figs/',
 
 ## 日本版死亡データベースの取得・集計
 
-健保組合データを擬似生成するために、出生・志望の公的統計を利用する。
+健保組合データを擬似生成するために、出生・死亡の公的統計を取得・集計します。
 
-乱数でシミュレーションするために必要な情報を集計して求める。
+乱数でシミュレーションするために必要な情報を集計して求めていきます。
 
 ### 出生率データの取得
 
-[IPSS](http://www.ipss.go.jp/)が公開している、年次出生数のデータを利用する。
+[IPSS](http://www.ipss.go.jp/)が公開している、年次出生数のデータを利用します。
 
 ```{r, message=FALSE}
 library(readr)
 library(dplyr)
 url = 'http://www.ipss.go.jp/p-toukei/JMD/00/STATS/Births.txt'
-dat = read.table(url, skip=2, header = TRUE)
-dat %>% head
+df_birth = read.table(url, skip=2, header = TRUE)
+df_birth %>% head
 ```
-ある年に、FemaleとMaleが何人生まれたかのデータになっている。
 
-乱数を利用して、誕生年と性別をサンプリングしたい。性別列を作って縦に持っておく。
+ある年に、FemaleとMaleが何人生まれたかのデータになっています。
+
+乱数を利用して、出生年と性別をサンプリングするために、情報を整理しておきます。
 
 ```{r, message=FALSE}
 library(tidyr)
 library(magrittr)
-dat %>%  
+
+## 性別列を作って、縦持ちします。
+df_birth %<>%  
   pivot_longer(cols = c("Male", "Female"), names_to = "Sex", values_to = "Life") %>% 
-  mutate(Sex = if_else(Sex == "Female", "F", "M")) -> dat
-dat
+  mutate(Sex = if_else(Sex == "Female", "F", "M"))
+df_birth %>% head
 ```
 
-乱数でシミュレーションをするために、累積比率を出しておく
+乱数でシミュレーションをするために、累積比率を出しておきます。
 
 ```{r}
-dat %<>%
-  arrange(Sex, Year)
-dat %<>%
+df_birth %<>%
+  arrange(Sex, Year) %>% 
   mutate(ratio = Life / sum(Life)) %>%
   mutate(cum_sum = cumsum(ratio))
 
-
-dat %>% 
+## あとで使うので保存しておく
+df_birth %>% 
   select(-Total) %>% 
   write.csv("./data/ipss_birth.csv", row.names=FALSE, quote = FALSE)
+
 ## 内容確認
-dat %>% 
+df_birth %>% 
   select(-Total) %>% 
-  head(100)
+  head(10)
 ```
 
 
-累積確率分布を作る。これにより、一様乱数(y軸:0-1)から、対応する行番号が得られて、
-行番号から、(出生年,性別)を得ることができる。
+この表を使うと、下図のように一様乱数と行番号を対応させることで、
+(出生年、性別)を統計値の分布に沿って擬似生成することができます。
 
-欲しい人数分だけ一様乱数を取れば、出生のデータが得られる。
+欲しい人数分だけ一様乱数を取れば、出生のデータが得られます。
 
 ```{r}
 library(ggplot2)
-dat = read_csv("./data/ipss_birth.csv")
+df_birth = read_csv("./data/ipss_birth.csv")
 
-dat %>% 
+
+## 頑張って可視化する
+df_birth %>% 
   mutate(x_axis = paste(Year, Sex, sep="")) %>% 
   mutate(row_num = 1:nrow(.)) %>% 
   ggplot() + 
@@ -77,63 +88,63 @@ dat %>%
     size=1, arrow=arrow()) + 
   annotate("segment",x=98,xend=98,y=0.7,yend=0.0,colour="blue",
      size=1,arrow=arrow()) + 
-
-    annotate("text", x=20, y=0.75, parse=TRUE, label="'Random Number 0.7'") +
+  annotate("text", x=20, y=0.75, parse=TRUE, label="'Random Number 0.7'") +
   annotate("text", x=125, y=0.2, parse=TRUE, label="'Rownum: 98 -> 1971-Male'") +
   ggtitle("Cumulative ratio of Population Birth")
 
 ```
 
-これを利用して、出生のシミュレーションができる。
+次は、死亡データをサンプリングするための情報を整理します。
 
 
 ### 死亡データの取得と整形
 
-次は、死亡率を算出して、死亡のシミュレーションを行う。
+次は、死亡率を算出します。
 
 ```{r}
 url_death_rate = "http://www.ipss.go.jp/p-toukei/JMD/00/STATS/Mx_1x1.txt"
-dat = read.table(url_death_rate, skip=2, header = TRUE)
-dat %>% str
+df_mortality = read.table(url_death_rate, skip=2, header = TRUE)
+df_mortality %>% head()
 
 ```
 
-死亡率のデータは、Year年にX才だった人が1年後に死んでいる確率を表している。(本当に？)
-
-今回は簡単のために、2016年の死亡率でシミュレーションを行う。
+死亡率のデータは、Year年にX才だった人が1年後に死んでいる確率を表している...みたいです。
+死亡率は毎年更新されるが、今回は簡単のために、2016年の死亡率でシミュレーションを行います。
 
 ```{r}
-dat %<>% 
+df_mortality %<>% 
   filter(Year == 2016) %>% 
   select(-Year) %>% 
   select(-Total)
+df_mortality %>% head()
 ```
 
-Ageがcharになっているので、確認する。
+よく見ると、Ageがchar型に判定されているので、確認します。
 
 ```{r}
-dat$Age %>% table
+df_mortality$Age %>% table
 ```
-110+があるので、これは簡単のために111才にしておく。
+"110+"があって、文字に判定されています。
+これは簡単のために111才にしておきます。人数は少ないので、大きな影響はないでしょうし。
+
 
 ```{r}
-dat %<>%
+df_mortality %<>%
   mutate(Age = if_else(Age == "110+", "111", Age)) %>% 
-  mutate(Age = as.integer(Age)) 
-
-dat %<>%
-  mutate(Anb = Age) %>% 
+  mutate(Anb = as.integer(Age)) %>%
   select(-Age)
 
-dat %>% head
+df_mortality %>% head
 ```
 
-AnbとAlbについては、あとで追記する。Anbなので、Albに直す。
+AnbとAlbについては、...あとで追記します。年齢には２種類あるみたいです。
 
-$x$才のAnb死亡率$q_x$とすると、Alb死亡率は、$\frac{q_x+q_{x+1}}{2}$になる。
+公的統計ではAnbなので、Albに直します。
+
+$x$才のAnb死亡率$q_x$とすると、Alb死亡率は、$\frac{q_x+q_{x+1}}{2}$になります。
 
 ```{r}
-dat %<>%
+df_mortality %<>%
   mutate(Female = as.numeric(Female)) %>%
   mutate(Male = as.numeric(Male)) %>% 
   mutate(lead_Female = lead(Female)) %>% 
@@ -143,13 +154,13 @@ dat %<>%
   mutate(Alb = Anb) %>% 
   select(Alb,F,M)
 
-dat %>% head
+df_mortality %>% head
 ```
 
-年次死亡率を可視化してみる。
-横軸が年齢、縦軸が1年以内に死亡する確率。
+年次死亡率を可視化してみます。
+横軸が年齢、縦軸が1年以内に死亡する確率です。
 ```{r}
-dat %>% 
+df_mortality %>% 
   pivot_longer(cols=c("F","M"), names_to = "Sex", values_to = "Mortarity") %>% 
   ggplot(aes(x = Alb, y = Mortarity, group = Sex, color = Sex)) + 
   geom_line() + 
@@ -158,28 +169,33 @@ dat %>%
   ggtitle("Mortarity")
 ```
 
-高齢部分が不自然だが、そういうものらしい。100才以上は使わない、として切り捨てる。
+高齢部分が不自然ですが(1.00を超えることはない...)、そういうものらしいです。100才以上は使わない、として切り捨てます。
 
-また、年次死亡率を月次死亡率に変換する。
+最後に、シミュレーションで使うので、年次死亡率を月次死亡率に変換します。
 
 年次死亡率を$y$、月次死亡率を$x$とすると、
 
-$y = 1 - (1-x)^{12}$なので、$x$について解くと、$x = 1 - (1-y)^{0.08...}$になる。これにより、月次死亡率が得られる。
+$y = 1 - (1-x)^{12}$なので、$x$について解くと、$x = 1 - (1-y)^{\frac{1}{12}}$になります。
+
+これにより、月次死亡率が得られました。
 
 ```{r}
-dat %<>%
+## 100才以上は切り捨て
+df_mortality %<>%
   filter(Alb < 100)
 
-dat %<>% 
+## 月次死亡率に変換
+df_mortality %<>% 
   mutate(F = 1 - (1-F)**(1/12)) %>% 
   mutate(M = 1 - (1-M)**(1/12)) 
 
-dat %>% write.csv("./data/ipss_mortality.csv", quote=F, row.names = F)
-dat %>% 
+## 保存しておく
+df_mortality %>% write.csv("./data/ipss_mortality.csv", quote=F, row.names = F)
+
+df_mortality %>% 
   mutate(F = round(F, 7)) %>% 
   mutate(M = round(M, 7)) %>% 
   head
-
 ```
 
 ## 加入者情報レコードの擬似生成
@@ -197,8 +213,8 @@ library(magrittr)
 library(dplyr)
 library(stringr)
 library(purrr)
-ym_to_t = function(yyyymm = "2022/06"){
-  #'  transform YYYY/MM to time value
+ym_to_t = function(yyyymm){
+  #' YYYY/MM の形の日付を、数字に変える関数 2022/07 -> 2022.05みたいな感じ
   #' 
   #' @param yyyymm character : YYYY/MM or YYYY/M
   #' @usage ym_to_t(yyyymm)
@@ -206,12 +222,12 @@ ym_to_t = function(yyyymm = "2022/06"){
   tmp = yyyymm %>% str_split("/") %>% .[[1]] %>% as.numeric()
   tmp[2] = tmp[2] - 0.5
   tmp[2] = tmp[2] / 12
-  return(as.character(sum(tmp)))
+  
+  as.character(sum(tmp)) %>% return
 }
 
-
 t_to_ym = function(time){
-  #'  transform time value to YYYY/MM
+  #'  数字をYYYY/MMに変える関数。2022.05 -> 2022/07 みたいな感じ
   #' 
   #' @param time string or numeric : year value (ex. 2022) + month value (ex.0.3),
   #' @usage t_to_ym(time)
@@ -234,7 +250,8 @@ df %>%
 ```
 ### 出生のシミュレーション
 
-出生シミュレーション用のデータを読み込みます。(01-01で作成したもの)
+前節で作成した出生シミュレーション用のデータを読み込みます。
+
 ```{r}
 library(readr)
 df_birth = read_csv("./data/ipss_birth.csv")
@@ -280,12 +297,17 @@ family_ratio = 0.3 ## 被扶養者が占める割合
 乱数で保険者を生成します。誕生年の分布は、df_birthに従わせます。
 
 ```{r}
-N_ = N * 20
+N_ = N * 20 ## 適当に増やしておく。
+
 set.seed(71)
+
+## 乱数だけ作っておく
 random_value = runif(N_)
 df_exposure = data.frame(value = random_value)
 
-## 誕生月判定と、曝露期間の設定
+## 誕生月判定と、曝露期間の設定を行います。
+## 乱数の値が累積比率の値に挟まれている : left <= value <= right なところを探すことで、
+## 乱数と行の対応関係が得られます。非効率ですが...
 df_exposure = df_exposure %>% 
   merge(df_birth, all = TRUE) %>% 
   filter(left <= value) %>% 
