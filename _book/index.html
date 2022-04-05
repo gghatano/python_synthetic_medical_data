@@ -24,7 +24,7 @@
 <meta name="author" content="gg_hatano" />
 
 
-<meta name="date" content="2022-02-27" />
+<meta name="date" content="2022-03-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -156,9 +156,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="1.3" data-path="01.html"><a href="01.html#まとめ"><i class="fa fa-check"></i><b>1.3</b> まとめ</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="02.html"><a href="02.html"><i class="fa fa-check"></i><b>2</b> 発生率を推定しよう</a></li>
-<li class="chapter" data-level="3" data-path="03.html"><a href="03.html"><i class="fa fa-check"></i><b>3</b> 血圧別発生率に挑戦</a></li>
-<li class="chapter" data-level="4" data-path="04.html"><a href="04.html"><i class="fa fa-check"></i><b>4</b> 医療統計の導入</a></li>
+<li class="chapter" data-level="2" data-path="01.html"><a href="01.html#信頼区間の計算の準備"><i class="fa fa-check"></i><b>2</b> 1-3 信頼区間の計算…の準備</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="01.html"><a href="01.html#死亡率の信頼区間"><i class="fa fa-check"></i><b>2.0.1</b> 死亡率の信頼区間</a></li>
+<li class="chapter" data-level="2.0.2" data-path="01.html"><a href="01.html#信頼区間の精緻な計算"><i class="fa fa-check"></i><b>2.0.2</b> 信頼区間の精緻な計算</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="02.html"><a href="02.html"><i class="fa fa-check"></i><b>3</b> 発生率を推定しよう</a></li>
+<li class="chapter" data-level="4" data-path="03.html"><a href="03.html"><i class="fa fa-check"></i><b>4</b> 血圧別発生率に挑戦</a></li>
+<li class="chapter" data-level="5" data-path="04.html"><a href="04.html"><i class="fa fa-check"></i><b>5</b> 医療統計の導入</a></li>
 </ul>
 
       </nav>
@@ -179,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Python医療データ分析本をRでやる</h1>
 <p class="author"><em>gg_hatano</em></p>
-<p class="date"><em>2022-02-27</em></p>
+<p class="date"><em>2022-03-26</em></p>
 </div>
 <div id="はじめに" class="section level1 unnumbered">
 <h1>はじめに</h1>
@@ -191,7 +196,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="注意点" class="section level2" number="0.2">
 <h2><span class="header-section-number">0.2</span> 注意点</h2>
 <p>python-&gt;Rとしているので、参考文献と比べて実装方針が異なるところがあります。</p>
-<p>特に、for文を回すところは、できるだけdataframeの操作でなんとかしているので、実装が大きく異なります。</p>
+<p>特に、for文を回すところは、できるだけdataframeの操作でなんとかしているので、実装が大きく異なります。パフォーマンスは向上している…はずです。</p>
 </div>
 <div id="分析環境の構築方法" class="section level2" number="0.3">
 <h2><span class="header-section-number">0.3</span> 分析環境の構築方法</h2>

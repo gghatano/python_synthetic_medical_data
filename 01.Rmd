@@ -516,6 +516,113 @@ df_exposure_death %>% head
 が気になります。調べておきます。
 
 
-## まとめ
+### まとめ
 
 公的統計のデータを用いて、出生、死亡のシミュレーションをして、擬似データを生成しました。
+
+
+## 信頼区間の計算...の準備
+
+死亡率の推定を行う...前に、ちょっと実験しておきます。
+
+推定したい確率が小さい場合、推定の精度を十分に(信頼区間が±10%程度/0や1を跨がない/etc...)算出したい場合は、大量のエクスポージャが必要になります。
+
+どの程度エクスポージャが必要か、試しに実験してみます。
+
+
+### 死亡率の信頼区間
+
+エクスポージャ$l$, 死亡率$q$で、死亡数$d$が二項分布$Bi(l,q)$に従うとするとき、死亡数の期待値$E[d]$と分散$V[d]$は、
+
+$$
+\begin{align}
+ E[d] &= lq \\
+ V[d] &= lq(1-q)  
+\end{align}
+$$
+
+となります。そして、二項分布が正規分布に近似可能なとき(この条件は?)、二項分布の信頼区間は、$p=\phi_{(z)}$を標準正規分布累積分布関数、$z_{p}$をその逆関数として、
+$$
+P\left[ \frac{|d - E[d]|}{\sqrt{V[d]}} < z_{1 - \frac{\epsilon}{2}}\right] \sim 1-\epsilon
+$$
+と表せます。$\epsilon = 0.05$のとき、$z_{0.975} = 1.96$です。検定の時よく使う数字ですね。上側2.5%の上限値です。
+
+
+この式を変形していくと、死亡$q = \frac{E[d]}{l}$の範囲が求まります。
+
+$$
+\begin{align}
+1 - \epsilon &= P\left[ (d-E[d])^2 < z^2 V[d] \right] \\
+ &= P\left[d - z\sqrt{V[d]} < E[d] < d + z\sqrt{V[d]} \right] \\
+ &= P\left[ \frac{d - z\sqrt{V[d]}}{l} < q < \frac{d + z\sqrt{V[d]}}{l} \right]
+\end{align}
+$$
+
+なので、$q$の範囲が求まりそうです。
+
+実務的には、$V$に観測値を代入することで近似的に範囲を得ることがある...みたいです。
+が、$\epsilon$を小さくすると$z_{1-\frac{\epsilon}{2}} \rightarrow \infty$になるので、
+$\epsilon$の値によっては信頼区間が大きくなることがあります。
+
+### 信頼区間の精緻な計算
+
+厳密に計算してみます。
+$$
+\begin{align}
+1 - \epsilon &= P\left[ (d-E[d])^2 < z^2 V[d] \right] \\
+ &= P\left[(d-lq)^2 < z^2 lq(1-q) \right] \\
+ &= P\left[ (l^2 + z^2l)q^2 - (2dl+z^2l)q + d^2 < 0  \right] 
+\end{align}
+$$
+
+です。
+放物線がy軸の下側にある区間...なので、2次方程式の解の間ですね。頑張って解きましょう。
+
+$$
+\begin{gather}
+& \frac{(2dl + z^2l) - \sqrt{D}}{2(l^2 + z^2l)} < q < \frac{(2dl + z^2l) +\sqrt{D}}{2(l^2 + z^2l)} \\
+& D = (2dl + z^2l)^2 - 4(l^2 + z^2l)d^2
+\end{gather}
+$$
+
+と表すことができました。厳密な式だと、信頼区間が0や1をはみ出さないはずですが、確認してみましょう。
+
+我慢して$D$の計算を進めて、$q$を綺麗に表してみると、
+
+$$
+\begin{align}
+\frac{(2dl + z^2l) - 2lz\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{2(l^2 + z^2l)} < &q < \frac{(2dl + z^2l) + 2lz\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{2(l^2 + z^2l)} \\
+\frac{(d + \frac{z^2}{2}) - z\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{l + z^2} < &q < \frac{(d + \frac{z^2}{2}) + z\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{l + z^2} \\
+\end{align}
+$$
+となりました。
+
+極端な例として、$\epsilon \rightarrow 1$の時は、$z\rightarrow 0$で、$ q \rightarrow \frac{d}{l}$、
+$\epsilon \rightarrow 1$の時は、$z \rightarrow \infty$で、$0 < q < 1$となり、ちゃんと確率っぽい区間になりました。
+
+
+## 死亡率と必要なエクスポージャの関係
+
+$q$のp5%信頼区間を、値の10%くらいの精度:$0.9q \sim 1.1q$くらいで評価したい場合に、必要なエクスポージャ$l$がどれくらいかを計算してみます。
+
+実際の$q$の観測値は、
+```{r}
+df_mortality = read_csv("data/ipss_mortality.csv")
+df_mortality %>% 
+  filter(Alb >= 40 & Alb <= 45)
+```
+40-45才に注目したら、大体0.0001くらいですね。
+
+乱数で二項分布から生成して、信頼区間の収束の様子を確かめてみます。
+
+```{r}
+## 乱数でなんやかんやする
+epsilon = 0.05
+z = qnorm(1 - epsilon / 2)
+z
+
+
+
+```
+
+

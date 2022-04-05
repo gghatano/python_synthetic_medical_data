@@ -24,7 +24,7 @@
 <meta name="author" content="gg_hatano" />
 
 
-<meta name="date" content="2022-02-27" />
+<meta name="date" content="2022-03-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -156,9 +156,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="1.3" data-path="01.html"><a href="01.html#まとめ"><i class="fa fa-check"></i><b>1.3</b> まとめ</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="02.html"><a href="02.html"><i class="fa fa-check"></i><b>2</b> 発生率を推定しよう</a></li>
-<li class="chapter" data-level="3" data-path="03.html"><a href="03.html"><i class="fa fa-check"></i><b>3</b> 血圧別発生率に挑戦</a></li>
-<li class="chapter" data-level="4" data-path="04.html"><a href="04.html"><i class="fa fa-check"></i><b>4</b> 医療統計の導入</a></li>
+<li class="chapter" data-level="2" data-path="01.html"><a href="01.html#信頼区間の計算の準備"><i class="fa fa-check"></i><b>2</b> 1-3 信頼区間の計算…の準備</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="01.html"><a href="01.html#死亡率の信頼区間"><i class="fa fa-check"></i><b>2.0.1</b> 死亡率の信頼区間</a></li>
+<li class="chapter" data-level="2.0.2" data-path="01.html"><a href="01.html#信頼区間の精緻な計算"><i class="fa fa-check"></i><b>2.0.2</b> 信頼区間の精緻な計算</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="02.html"><a href="02.html"><i class="fa fa-check"></i><b>3</b> 発生率を推定しよう</a></li>
+<li class="chapter" data-level="4" data-path="03.html"><a href="03.html"><i class="fa fa-check"></i><b>4</b> 血圧別発生率に挑戦</a></li>
+<li class="chapter" data-level="5" data-path="04.html"><a href="04.html"><i class="fa fa-check"></i><b>5</b> 医療統計の導入</a></li>
 </ul>
 
       </nav>
@@ -242,15 +247,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     Year Sex      Life   ratio cum_sum
 ##    &lt;int&gt; &lt;chr&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
 ##  1  1947 F     1301806 0.0118   0.0118
-##  2  1948 F     1303060 0.0119   0.0237
-##  3  1949 F     1316630 0.0120   0.0357
-##  4  1950 F     1134396 0.0103   0.0460
-##  5  1951 F     1043048 0.00949  0.0555
-##  6  1952 F      977101 0.00889  0.0644
-##  7  1953 F      910516 0.00829  0.0727
-##  8  1954 F      858368 0.00781  0.0805
-##  9  1955 F      841022 0.00765  0.0882
-## 10  1956 F      809194 0.00736  0.0955</code></pre>
+##  2  1948 F     1303060 0.0118   0.0235
+##  3  1949 F     1316630 0.0119   0.0354
+##  4  1950 F     1134396 0.0102   0.0457
+##  5  1951 F     1043048 0.00942  0.0551
+##  6  1952 F      977101 0.00883  0.0639
+##  7  1953 F      910516 0.00822  0.0721
+##  8  1954 F      858368 0.00775  0.0799
+##  9  1955 F      841022 0.00760  0.0875
+## 10  1956 F      809194 0.00731  0.0948</code></pre>
 <p>この表を使うと、下図のように一様乱数と行番号を対応させることで、
 (出生年、性別)を統計値の分布に沿って擬似生成することができます。</p>
 <p>欲しい人数分だけ一様乱数を取れば、出生のデータが得られます。</p>
@@ -271,7 +276,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-15"><a href="01.html#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">20</span>, <span class="at">y=</span><span class="fl">0.75</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Random Number 0.7&#39;&quot;</span>) <span class="sc">+</span></span>
 <span id="cb7-16"><a href="01.html#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x=</span><span class="dv">125</span>, <span class="at">y=</span><span class="fl">0.2</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">label=</span><span class="st">&quot;&#39;Rownum: 98 -&gt; 1971-Male&#39;&quot;</span>) <span class="sc">+</span></span>
 <span id="cb7-17"><a href="01.html#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Cumulative ratio of Population Birth&quot;</span>)</span></code></pre></div>
-<p><img src="Figs/unnamed-chunk-4-1.png" width="1152" /></p>
+<p><img src="Figs/unnamed-chunk-29-1.png" width="1152" /></p>
 <p>次は、死亡データをサンプリングするための情報を整理します。</p>
 </div>
 <div id="死亡データの取得と整形" class="section level3" number="1.1.2">
@@ -281,12 +286,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-2"><a href="01.html#cb8-2" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="ot">=</span> <span class="fu">read.table</span>(url_death_rate, <span class="at">skip=</span><span class="dv">2</span>, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb8-3"><a href="01.html#cb8-3" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code></pre></div>
 <pre><code>##   Year Age   Female     Male    Total
-## 1 1947   0 0.087401 0.099181 0.093432
-## 2 1947   1 0.033723 0.034697 0.034220
-## 3 1947   2 0.016994 0.016804 0.016897
-## 4 1947   3 0.011412 0.011461 0.011437
-## 5 1947   4 0.006918 0.007337 0.007130
-## 6 1947   5 0.004938 0.005208 0.005075</code></pre>
+## 1 1947   0 0.087397 0.099177 0.093428
+## 2 1947   1 0.033721 0.034696 0.034218
+## 3 1947   2 0.016993 0.016803 0.016897
+## 4 1947   3 0.011411 0.011461 0.011436
+## 5 1947   4 0.006917 0.007336 0.007130
+## 6 1947   5 0.004937 0.005208 0.005075</code></pre>
 <p>死亡率のデータは、Year年にX才だった人が1年後に死んでいる確率を表している…みたいです。
 死亡率は毎年更新されるが、今回は簡単のために、2016年の死亡率でシミュレーションを行います。</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="01.html#cb10-1" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="sc">%&lt;&gt;%</span> </span>
@@ -295,12 +300,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-4"><a href="01.html#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Total)</span>
 <span id="cb10-5"><a href="01.html#cb10-5" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code></pre></div>
 <pre><code>##   Age   Female     Male
-## 1   0 0.002028 0.001995
-## 2   1 0.000313 0.000340
-## 3   2 0.000174 0.000178
+## 1   0 0.002029 0.001995
+## 2   1 0.000310 0.000339
+## 3   2 0.000173 0.000177
 ## 4   3 0.000098 0.000133
-## 5   4 0.000087 0.000095
-## 6   5 0.000084 0.000101</code></pre>
+## 5   4 0.000087 0.000094
+## 6   5 0.000083 0.000100</code></pre>
 <p>よく見ると、Ageがchar型に判定されているので、確認します。</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="01.html#cb12-1" aria-hidden="true" tabindex="-1"></a>df_mortality<span class="sc">$</span>Age <span class="sc">%&gt;%</span> table</span></code></pre></div>
 <pre><code>## .
@@ -331,12 +336,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-5"><a href="01.html#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-6"><a href="01.html#cb14-6" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="sc">%&gt;%</span> head</span></code></pre></div>
 <pre><code>##     Female     Male Anb
-## 1 0.002028 0.001995   0
-## 2 0.000313 0.000340   1
-## 3 0.000174 0.000178   2
+## 1 0.002029 0.001995   0
+## 2 0.000310 0.000339   1
+## 3 0.000173 0.000177   2
 ## 4 0.000098 0.000133   3
-## 5 0.000087 0.000095   4
-## 6 0.000084 0.000101   5</code></pre>
+## 5 0.000087 0.000094   4
+## 6 0.000083 0.000100   5</code></pre>
 <p>AnbとAlbについては、…あとで追記します。年齢には２種類あるみたいです。</p>
 <p>公的統計ではAnbなので、Albに直します。</p>
 <p><span class="math inline">\(x\)</span>才のAnb死亡率<span class="math inline">\(q_x\)</span>とすると、Alb死亡率は、<span class="math inline">\(\frac{q_x+q_{x+1}}{2}\)</span>になります。</p>
@@ -352,12 +357,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-10"><a href="01.html#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-11"><a href="01.html#cb16-11" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="sc">%&gt;%</span> head</span></code></pre></div>
 <pre><code>##   Alb         F         M
-## 1   0 0.0011705 0.0011675
-## 2   1 0.0002435 0.0002590
-## 3   2 0.0001360 0.0001555
-## 4   3 0.0000925 0.0001140
-## 5   4 0.0000855 0.0000980
-## 6   5 0.0000815 0.0001060</code></pre>
+## 1   0 0.0011695 0.0011670
+## 2   1 0.0002415 0.0002580
+## 3   2 0.0001355 0.0001550
+## 4   3 0.0000925 0.0001135
+## 5   4 0.0000850 0.0000970
+## 6   5 0.0000810 0.0001050</code></pre>
 <p>年次死亡率を可視化してみます。
 横軸が年齢、縦軸が1年以内に死亡する確率です。</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="01.html#cb18-1" aria-hidden="true" tabindex="-1"></a>df_mortality <span class="sc">%&gt;%</span> </span>
@@ -367,7 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb18-5"><a href="01.html#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">1.0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>) <span class="sc">+</span> </span>
 <span id="cb18-6"><a href="01.html#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">10</span>, <span class="at">y =</span> <span class="fl">1.05</span>, <span class="at">label =</span> <span class="st">&#39;Mortarity: 1.0&#39;</span>) <span class="sc">+</span> </span>
 <span id="cb18-7"><a href="01.html#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Mortarity&quot;</span>)</span></code></pre></div>
-<p><img src="Figs/unnamed-chunk-10-1.png" width="1152" /></p>
+<p><img src="Figs/unnamed-chunk-35-1.png" width="1152" /></p>
 <p>高齢部分が不自然ですが(1.00を超えることはない…)、そういうものらしいです。100才以上は使わない、として切り捨てます。</p>
 <p>最後に、シミュレーションで使うので、年次死亡率を月次死亡率に変換します。</p>
 <p>年次死亡率を<span class="math inline">\(y\)</span>、月次死亡率を<span class="math inline">\(x\)</span>とすると、</p>
@@ -390,11 +395,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb19-15"><a href="01.html#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">M =</span> <span class="fu">round</span>(M, <span class="dv">7</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb19-16"><a href="01.html#cb19-16" aria-hidden="true" tabindex="-1"></a>  head</span></code></pre></div>
 <pre><code>##   Alb        F        M
-## 1   0 9.76e-05 9.73e-05
-## 2   1 2.03e-05 2.16e-05
-## 3   2 1.13e-05 1.30e-05
+## 1   0 9.75e-05 9.73e-05
+## 2   1 2.01e-05 2.15e-05
+## 3   2 1.13e-05 1.29e-05
 ## 4   3 7.70e-06 9.50e-06
-## 5   4 7.10e-06 8.20e-06
+## 5   4 7.10e-06 8.10e-06
 ## 6   5 6.80e-06 8.80e-06</code></pre>
 </div>
 </div>
@@ -456,11 +461,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##    Year Sex      Life   ratio cum_sum
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
 ## 1  1947 F     1301806 0.0118   0.0118
-## 2  1948 F     1303060 0.0119   0.0237
-## 3  1949 F     1316630 0.0120   0.0357
-## 4  1950 F     1134396 0.0103   0.0460
-## 5  1951 F     1043048 0.00949  0.0555
-## 6  1952 F      977101 0.00889  0.0644</code></pre>
+## 2  1948 F     1303060 0.0118   0.0235
+## 3  1949 F     1316630 0.0119   0.0354
+## 4  1950 F     1134396 0.0102   0.0457
+## 5  1951 F     1043048 0.00942  0.0551
+## 6  1952 F      977101 0.00883  0.0639</code></pre>
 <p>0-1の乱数から、誕生年・性別を決めたいです。</p>
 <p>1950年男性の累積出生割合が0.1、1951年男性の累積出生割合が0.2なら、
 0.1&lt;= (乱数) &lt;= 0.2 だったときに、1951年男性が生まれたことにする、みたいな感じです。
@@ -477,11 +482,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##    Year Sex     ratio cum_sum   left  right
 ##   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
 ## 1  1947 F     0.0118   0.0118 0      0.0118
-## 2  1948 F     0.0119   0.0237 0.0118 0.0237
-## 3  1949 F     0.0120   0.0357 0.0237 0.0357
-## 4  1950 F     0.0103   0.0460 0.0357 0.0460
-## 5  1951 F     0.00949  0.0555 0.0460 0.0555
-## 6  1952 F     0.00889  0.0644 0.0555 0.0644</code></pre>
+## 2  1948 F     0.0118   0.0235 0.0118 0.0235
+## 3  1949 F     0.0119   0.0354 0.0235 0.0354
+## 4  1950 F     0.0102   0.0457 0.0354 0.0457
+## 5  1951 F     0.00942  0.0551 0.0457 0.0551
+## 6  1952 F     0.00883  0.0639 0.0551 0.0639</code></pre>
 <p>次に、擬似生成のためのパラメータを設定します。</p>
 <p>観察期間は、指数分布を使っていい感じに決めます。</p>
 <p>pythonのnp.random.exponentialの引数muと、Rのrexpの引数rateは、逆数の関係らしいので、注意します。</p>
@@ -526,12 +531,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb28-28"><a href="01.html#cb28-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-29"><a href="01.html#cb28-29" aria-hidden="true" tabindex="-1"></a>df_exposure <span class="sc">%&gt;%</span> head</span></code></pre></div>
 <pre><code>##   Year Sex    Life      ratio    cum_sum    value birth_ym   value1
-## 1 1947   F 1301806 0.01184804 0.01184804 1947.197  1947/03 11.06787
-## 2 1947   F 1301806 0.01184804 0.01184804 1947.455  1947/06 13.46310
-## 3 1947   F 1301806 0.01184804 0.01184804 1947.102  1947/02 10.70483
-## 4 1947   F 1301806 0.01184804 0.01184804 1947.495  1947/06 16.09096
-## 5 1947   F 1301806 0.01184804 0.01184804 1947.439  1947/06 11.86268
-## 6 1947   F 1301806 0.01184804 0.01184804 1947.684  1947/09 18.95382
+## 1 1947   F 1301806 0.01175801 0.01175801 1947.197  1947/03 11.06787
+## 2 1947   F 1301806 0.01175801 0.01175801 1947.455  1947/06 13.46310
+## 3 1947   F 1301806 0.01175801 0.01175801 1947.102  1947/02 10.70483
+## 4 1947   F 1301806 0.01175801 0.01175801 1947.495  1947/06 16.09096
+## 5 1947   F 1301806 0.01175801 0.01175801 1947.439  1947/06 11.86268
+## 6 1947   F 1301806 0.01175801 0.01175801 1947.684  1947/09 18.95382
 ##      value2  start_t    end_t start_obs_ym end_obs_ym
 ## 1 8.1800011 2011.068 2019.248      2011/01    2019/03
 ## 2 4.6694234 2013.463 2018.133      2013/06    2018/02
@@ -591,10 +596,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##   &lt;int&gt;             &lt;dbl&gt;
 ## 1  1947            0.0258
 ## 2  1948            0.029 
-## 3  1949            0.0256
+## 3  1949            0.0254
 ## 4  1950            0.019 
-## 5  1951            0.0194
-## 6  1952            0.0196</code></pre>
+## 5  1951            0.0184
+## 6  1952            0.02</code></pre>
 <p>次に、真のデータで、出生比率を集計します。</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="01.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 真の誕生年比率の集計</span></span>
 <span id="cb34-2"><a href="01.html#cb34-2" aria-hidden="true" tabindex="-1"></a>df_true_birth <span class="ot">=</span> </span>
@@ -607,12 +612,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## # A tibble: 6 × 2
 ##    Year True_Ratio
 ##   &lt;int&gt;      &lt;dbl&gt;
-## 1  1947     0.0244
-## 2  1948     0.0244
-## 3  1949     0.0245
-## 4  1950     0.0213
-## 5  1951     0.0195
-## 6  1952     0.0182</code></pre>
+## 1  1947     0.0242
+## 2  1948     0.0242
+## 3  1949     0.0244
+## 4  1950     0.0211
+## 5  1951     0.0193
+## 6  1952     0.0181</code></pre>
 <p>可視化して見た目を比べます。</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="01.html#cb36-1" aria-hidden="true" tabindex="-1"></a>df_birth_compare <span class="ot">=</span> <span class="fu">merge</span>(df_reproducted_birth, df_true_birth, <span class="at">by =</span> <span class="st">&quot;Year&quot;</span>)</span>
 <span id="cb36-2"><a href="01.html#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -630,7 +635,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb36-14"><a href="01.html#cb36-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Birth Ratio&quot;</span>) <span class="sc">+</span> </span>
 <span id="cb36-15"><a href="01.html#cb36-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>),</span>
 <span id="cb36-16"><a href="01.html#cb36-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
-<p><img src="Figs/unnamed-chunk-20-1.png" width="1152" /></p>
+<p><img src="Figs/unnamed-chunk-45-1.png" width="1152" /></p>
 <p>…まあ、真の値から上下にブレている…かな…？</p>
 <p>1966年は丙午ですね。これで、出生のシミュレーションができました。</p>
 </div>
@@ -645,12 +650,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## # A tibble: 6 × 4
 ##     Alb sex    mortality key  
 ##   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;
-## 1     0 F     0.0000976  0_F  
-## 2     1 F     0.0000203  1_F  
+## 1     0 F     0.0000975  0_F  
+## 2     1 F     0.0000201  1_F  
 ## 3     2 F     0.0000113  2_F  
 ## 4     3 F     0.00000771 3_F  
-## 5     4 F     0.00000713 4_F  
-## 6     5 F     0.00000679 5_F</code></pre>
+## 5     4 F     0.00000708 4_F  
+## 6     5 F     0.00000675 5_F</code></pre>
 <p>年齢ごとに、一定確率で死亡するので、これをシミュレーションします。</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="01.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 観察期間全体の期間を作成する</span></span>
 <span id="cb39-2"><a href="01.html#cb39-2" aria-hidden="true" tabindex="-1"></a>date_vec <span class="ot">=</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">&quot;2010/01/01&quot;</span>), <span class="fu">as.Date</span>(<span class="st">&quot;2019/12/01&quot;</span>), <span class="at">by =</span> <span class="st">&quot;month&quot;</span>)</span>
@@ -678,12 +683,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb41-11"><a href="01.html#cb41-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-12"><a href="01.html#cb41-12" aria-hidden="true" tabindex="-1"></a>df_exposure_mortality <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>start_obs_ym, <span class="sc">-</span>end_obs_ym) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code></pre></div>
 <pre><code>##       iid birth_ym       date age sex    mortality
-## 1 i004708  2019/03 2019-02-01   0   F 9.759403e-05
-## 2 i004314  2010/06 2010-02-01   0   F 9.759403e-05
-## 3 i004568  2016/02 2016-11-01   0   F 9.759403e-05
-## 4 i004674  2018/10 2019-04-01   0   F 9.759403e-05
-## 5 i004505  2015/11 2016-07-01   0   F 9.759403e-05
-## 6 i004385  2012/11 2013-07-01   0   F 9.759403e-05</code></pre>
+## 1 i004620  2018/07 2017-09-01   0   F 9.751061e-05
+## 2 i004310  2011/02 2011-08-01   0   F 9.751061e-05
+## 3 i004576  2017/08 2018-06-01   0   F 9.751061e-05
+## 4 i004536  2016/10 2016-04-01   0   F 9.751061e-05
+## 5 i004576  2017/08 2018-04-01   0   F 9.751061e-05
+## 6 i004675  2019/10 2019-01-01   0   F 9.751061e-05</code></pre>
 <p>乱数で死亡判定をします。</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="01.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 乱数で、死亡判定をする</span></span>
 <span id="cb43-2"><a href="01.html#cb43-2" aria-hidden="true" tabindex="-1"></a>df_death_date <span class="ot">=</span></span>
@@ -703,12 +708,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## # Groups:   iid [6]
 ##   iid     death_date
 ##   &lt;chr&gt;   &lt;date&gt;    
-## 1 i000017 2011-12-01
-## 2 i000022 2019-09-01
-## 3 i000054 2017-03-01
-## 4 i000056 2016-04-01
-## 5 i000077 2019-08-01
-## 6 i000097 2012-12-01</code></pre>
+## 1 i000037 2019-07-01
+## 2 i000105 2010-11-01
+## 3 i000106 2018-05-01
+## 4 i000116 2012-08-01
+## 5 i000123 2013-10-01
+## 6 i000139 2017-04-01</code></pre>
 <p>最初に死亡判定されたところを抽出しています。
 cumsumを2回重ねがけするテクニックは、いいですね。</p>
 </div>
@@ -743,7 +748,7 @@ cumsumを2回重ねがけするテクニックは、いいですね。</p>
 ## 1 i000800   F 1955-11-01   2011-01-01 2016-09-01       &lt;NA&gt;
 ## 2 i005929   M 1959-01-01   2016-08-01 2018-03-01       &lt;NA&gt;
 ## 3 i003572   F 1996-02-01   2011-04-01 2015-01-01       &lt;NA&gt;
-## 4 i007193   M 1975-02-01   2013-10-01 2016-04-01 2016-05-01
+## 4 i007193   M 1975-02-01   2013-10-01 2019-12-01       &lt;NA&gt;
 ## 5 i007360   M 1976-10-01   2012-11-01 2014-12-01       &lt;NA&gt;
 ## 6 i001612   F 1967-04-01   2010-08-01 2013-08-01       &lt;NA&gt;</code></pre>
 <p>それっぽいものはできました…が、</p>
@@ -757,6 +762,69 @@ cumsumを2回重ねがけするテクニックは、いいですね。</p>
 <div id="まとめ" class="section level2" number="1.3">
 <h2><span class="header-section-number">1.3</span> まとめ</h2>
 <p>公的統計のデータを用いて、出生、死亡のシミュレーションをして、擬似データを生成しました。</p>
+</div>
+</div>
+<div id="信頼区間の計算の準備" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> 1-3 信頼区間の計算…の準備</h1>
+<p>死亡率の推定を行う…前に、ちょっと実験しておきます。</p>
+<p>推定したい確率が小さい場合、推定の精度を十分に(信頼区間が±10%程度/0や1を跨がない/etc…)算出したい場合は、大量のエクスポージャが必要になります。</p>
+<p>どの程度エクスポージャが必要か、試しに実験してみます。</p>
+<div id="死亡率の信頼区間" class="section level3" number="2.0.1">
+<h3><span class="header-section-number">2.0.1</span> 死亡率の信頼区間</h3>
+<p>エクスポージャ<span class="math inline">\(l\)</span>, 死亡率<span class="math inline">\(q\)</span>で、死亡数<span class="math inline">\(d\)</span>が二項分布<span class="math inline">\(Bi(l,q)\)</span>に従うとするとき、死亡数の期待値<span class="math inline">\(E[d]\)</span>と分散<span class="math inline">\(V[d]\)</span>は、</p>
+<p><span class="math display">\[
+\begin{align}
+E[d] &amp;= lq \\
+V[d] &amp;= lq(1-q)  
+\end{align}
+\]</span></p>
+<p>となります。そして、二項分布が正規分布に近似可能なとき(この条件は?)、二項分布の信頼区間は、<span class="math inline">\(p=\phi_{(z)}\)</span>を標準正規分布累積分布関数、<span class="math inline">\(z_{p}\)</span>をその逆関数として、
+<span class="math display">\[
+P\left[ \frac{|d - E[d]|}{\sqrt{V[d]}} &lt; z_{1 - \frac{\epsilon}{2}}\right] \sim 1-\epsilon
+\]</span>
+と表せます。<span class="math inline">\(\epsilon = 0.05\)</span>のとき、<span class="math inline">\(z_{0.975} = 1.96\)</span>です。検定の時よく使う数字ですね。上側2.5%の上限値です。</p>
+<p>この式を変形していくと、死亡<span class="math inline">\(q = \frac{E[d]}{l}\)</span>の範囲が求まります。</p>
+<p><span class="math display">\[
+\begin{align}
+1 - \epsilon &amp;= P\left[ (d-E[d])^2 &lt; z^2 V[d] \right] \\
+&amp;= P\left[d - z\sqrt{V[d]} &lt; E[d] &lt; d + z\sqrt{V[d]} \right] \\
+&amp;= P\left[ \frac{d - z\sqrt{V[d]}}{l} &lt; q &lt; \frac{d + z\sqrt{V[d]}}{l} \right]
+\end{align}
+\]</span></p>
+<p>なので、<span class="math inline">\(q\)</span>の範囲が求まりそうです。</p>
+<p>実務的には、<span class="math inline">\(V\)</span>に観測値を代入することで近似的に範囲を得ることがある…みたいです。
+が、<span class="math inline">\(\epsilon\)</span>を小さくすると<span class="math inline">\(z_{1-\frac{\epsilon}{2}} \rightarrow \infty\)</span>になるので、
+<span class="math inline">\(\epsilon\)</span>の値によっては信頼区間が大きくなることがあります。</p>
+</div>
+<div id="信頼区間の精緻な計算" class="section level3" number="2.0.2">
+<h3><span class="header-section-number">2.0.2</span> 信頼区間の精緻な計算</h3>
+<p>厳密に計算してみます。
+<span class="math display">\[
+\begin{align}
+1 - \epsilon &amp;= P\left[ (d-E[d])^2 &lt; z^2 V[d] \right] \\
+&amp;= P\left[(d-lq)^2 &lt; z^2 lq(1-q) \right] \\
+&amp;= P\left[ (l^2 + z^2l)q^2 - (2dl+z^2l)q + d^2 &lt; 0  \right]
+\end{align}
+\]</span></p>
+<p>です。
+放物線がy軸の下側にある区間…なので、2次方程式の解の間ですね。頑張って解きましょう。</p>
+<p><span class="math display">\[
+\begin{gather}
+&amp; \frac{(2dl + z^2l) - \sqrt{D}}{2(l^2 + z^2l)} &lt; q &lt; \frac{(2dl + z^2l) +\sqrt{D}}{2(l^2 + z^2l)} \\
+&amp; D = (2dl + z^2l)^2 - 4(l^2 + z^2l)d^2
+\end{gather}
+\]</span></p>
+<p>と表すことができました。厳密な式だと、信頼区間が0や1をはみ出さないはずですが、確認してみましょう。</p>
+<p>我慢して<span class="math inline">\(D\)</span>の計算を進めて、<span class="math inline">\(q\)</span>を綺麗に表してみると、</p>
+<p><span class="math display">\[
+\begin{align}
+\frac{(2dl + z^2l) - 2lz\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{2(l^2 + z^2l)} &lt; &amp;q &lt; \frac{(2dl + z^2l) + 2lz\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{2(l^2 + z^2l)} \\
+\frac{(d + \frac{z^2}{2}) - z\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{l + z^2} &lt; &amp;q &lt; \frac{(d + \frac{z^2}{2}) + z\sqrt{d + \frac{z^2}{4} - \frac{d^2}{l}}}{l + z^2} \\
+\end{align}
+\]</span>
+となりました。</p>
+<p>極端な例として、<span class="math inline">\(\epsilon \rightarrow 1\)</span>の時は、<span class="math inline">\(z\rightarrow 0\)</span>で、$ q $、
+<span class="math inline">\(\epsilon \rightarrow 1\)</span>の時は、<span class="math inline">\(z \rightarrow \infty\)</span>で、<span class="math inline">\(0 &lt; q &lt; 1\)</span>となり、ちゃんと確率っぽい区間になりました。</p>
 
 </div>
 </div>
